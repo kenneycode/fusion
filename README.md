@@ -15,7 +15,7 @@
 
 根`gradle`中添加：
 
-```css
+```
 allprojects {
   repositories {
     ...
@@ -26,7 +26,7 @@ allprojects {
 
 要引入的`module`中添加：
 
-```css
+```
 dependencies {
 	implementation 'com.github.kenneycode:fusion:Tag'
 }
