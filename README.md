@@ -11,7 +11,29 @@
 
 持续更新中...
 
+引入方法：
+
+根`gradle`中添加：
+
+```css
+allprojects {
+  repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+  }
+}
+```
+
+要引入的`module`中添加：
+
+```css
+dependencies {
+	implementation 'com.github.kenneycode:fusion:Tag'
+}
+```
+
 基本用法：
+
 ```java
 // 创建图片输入源
 val image = FusionImageSource(decodeBitmapFromAssets("test.png")!!)
