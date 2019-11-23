@@ -1,18 +1,17 @@
 package io.github.kenneycode.fusion.demo
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import io.github.kenneycode.fusion.demo.SimpleActivity.Companion.KEY_SAMPLE_INDEX
 
-import java.io.IOException
-
-import io.github.kenneycode.fusion.inputsource.FusionImageSource
-import io.github.kenneycode.fusion.outputtarget.FusionGLTextureView
-import io.github.kenneycode.fusion.process.RenderGraph
-import io.github.kenneycode.fusion.renderer.SimpleRenderer
 
 /**
  *
@@ -29,36 +28,40 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Util.context = applicationContext
 
-        // 创建图片输入源
-        val image = FusionImageSource(decodeBitmapFromAssets("test.png")!!)
-
-        // 创建一个简单渲染器
-        val simpleRenderer = SimpleRenderer()
-
-        // 创建RenderGraph
-        val renderGraph = RenderGraph(simpleRenderer)
-        // 设置RenderGraph的输出目标
-        renderGraph.addOutputTarget(simpleRenderer, findViewById<FusionGLTextureView>(R.id.fusionGLTextureView))
-
-        // 给输入源设置渲染器
-        image.addRenderer(renderGraph)
-
-        // 开始处理
-        image.process()
+        val samplesList = findViewById<RecyclerView>(R.id.list)
+        val layoutManager = LinearLayoutManager(this)
+        layoutManager.orientation = LinearLayoutManager.VERTICAL
+        samplesList.layoutManager = layoutManager
+        samplesList.adapter = MyAdapter()
 
     }
 
-    private fun decodeBitmapFromAssets(filename: String): Bitmap? {
-        val options = BitmapFactory.Options()
-        options.inSampleSize = 1
-        try {
-            return BitmapFactory.decodeStream(assets.open(filename))
-        } catch (e: IOException) {
-            e.printStackTrace()
+    inner class MyAdapter : RecyclerView.Adapter<VH>() {
+
+        override fun onCreateViewHolder(p0: ViewGroup, p1: Int): VH {
+            val view = LayoutInflater.from(p0.context).inflate(R.layout.layout_sample_list_item, p0, false)
+            return VH(view)
         }
 
-        return null
+        override fun getItemCount(): Int {
+            return SimpleActivity.samples.size
+        }
+
+        override fun onBindViewHolder(p0: VH, p1: Int) {
+            p0.button.text = getString(SimpleActivity.samples[p1].first)
+            p0.button.setOnClickListener {
+                val intent = Intent(this@MainActivity, SimpleActivity::class.java)
+                intent.putExtra(KEY_SAMPLE_INDEX, p1)
+                this@MainActivity.startActivity(intent)
+            }
+        }
+
+    }
+
+    inner class VH(itemView : View) : RecyclerView.ViewHolder(itemView) {
+        var button : Button = itemView.findViewById(R.id.button)
     }
 
 }
