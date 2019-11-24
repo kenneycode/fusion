@@ -11,7 +11,7 @@ import java.util.LinkedList
 import io.github.kenneycode.fusion.common.FusionGLView
 import io.github.kenneycode.fusion.context.GLThread
 import io.github.kenneycode.fusion.framebuffer.FrameBuffer
-import io.github.kenneycode.fusion.renderer.ScreenRenderer
+import io.github.kenneycode.fusion.renderer.DisplayRenderer
 
 /**
  *
@@ -26,7 +26,7 @@ import io.github.kenneycode.fusion.renderer.ScreenRenderer
 class FusionGLTextureView : TextureView, FusionGLView {
 
     private var glThread: GLThread? = null
-    private var displayRenderer = ScreenRenderer()
+    private var displayRenderer = DisplayRenderer()
     private val pendingTasks = LinkedList<() -> Unit>()
     private var surfaceWidth = 0
     private var surfaceHeight = 0

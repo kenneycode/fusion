@@ -52,7 +52,7 @@ abstract class InputSource {
      * @param data 传入的数据
      * @param frameBuffer 输入FrameBuffer
      */
-    fun notifyInputReady(data: Map<String, Any>, frameBuffer: FrameBuffer) {
+    fun notifyInputReady(data: MutableMap<String, Any>, frameBuffer: FrameBuffer) {
         notifyInputReady(data, listOf(frameBuffer))
     }
 
@@ -63,7 +63,7 @@ abstract class InputSource {
      * @param data 传入的数据
      * @param frameBuffers 输入FrameBuffer数组
      */
-    fun notifyInputReady(data: Map<String, Any>, frameBuffers: List<FrameBuffer>) {
+    fun notifyInputReady(data: MutableMap<String, Any>, frameBuffers: List<FrameBuffer>) {
         renderers.forEach { target ->
             target.setInput(frameBuffers)
             target.update(data)

@@ -181,7 +181,7 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER_
      * @return 是否执行当次渲染
      *
      */
-    override fun update(data: Map<String, Any>): Boolean {
+    override fun update(data: MutableMap<String, Any>): Boolean {
         return true
     }
 

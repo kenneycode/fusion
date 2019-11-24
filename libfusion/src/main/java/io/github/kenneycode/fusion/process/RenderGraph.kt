@@ -61,7 +61,7 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
      * @return 是否需要执行当前渲染
      *
      */
-    override fun update(data: Map<String, Any>): Boolean {
+    override fun update(data: MutableMap<String, Any>): Boolean {
         val traversalQueue = LinkedList<Node>()
         traversalQueue.addLast(rootNode)
         while (!traversalQueue.isEmpty()) {

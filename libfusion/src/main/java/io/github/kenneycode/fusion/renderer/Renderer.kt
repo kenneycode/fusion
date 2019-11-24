@@ -30,7 +30,7 @@ interface Renderer {
      * @return 是否执行当次渲染
      *
      */
-    fun update(data: Map<String, Any>): Boolean
+    fun update(data: MutableMap<String, Any>): Boolean
 
     /**
      *

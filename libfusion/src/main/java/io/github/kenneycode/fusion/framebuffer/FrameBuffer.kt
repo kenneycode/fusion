@@ -30,6 +30,7 @@ class FrameBuffer : Ref() {
     var height = 0
     var texture = 0
     var frameBuffer = 0
+    var retain = false
 
     /**
      *
@@ -78,6 +79,18 @@ class FrameBuffer : Ref() {
         }
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer)
         glViewport(0, 0, width, height)
+    }
+
+    /**
+     *
+     * 减少引用计数，当引用计数为0时放回FrameBufferCache
+     *
+     */
+    override fun releaseRef() {
+        super.releaseRef()
+        if (refCount <= 0 && !retain) {
+            FrameBufferCache.releaseFrameBuffer(this)
+        }
     }
 
 }

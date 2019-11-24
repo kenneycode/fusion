@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(p0: VH, p1: Int) {
-            p0.button.text = getString(SimpleActivity.samples[p1].first)
+            p0.button.text = getString(SimpleActivity.samples[p1].first!!)
             p0.button.setOnClickListener {
                 val intent = Intent(this@MainActivity, SimpleActivity::class.java)
                 intent.putExtra(KEY_SAMPLE_INDEX, p1)

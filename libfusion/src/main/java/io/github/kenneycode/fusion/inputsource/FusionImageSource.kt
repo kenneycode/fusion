@@ -24,7 +24,7 @@ class FusionImageSource(private val image: Bitmap) : InputSource() {
      *
      * @param data 传入的数据
      */
-    fun process(data: Map<String, Any> = mutableMapOf()) {
+    fun process(data: MutableMap<String, Any> = mutableMapOf()) {
         GLContextPool.obtainGLContext(this)?.let { glContext ->
             glContext.runOnGLContext {
                 val imageTexture = GLUtil.createTexture()
