@@ -93,4 +93,9 @@ class FrameBuffer : Ref() {
         }
     }
 
+    fun release() {
+        GLUtil.deleteTexture(texture)
+        GLUtil.deleteFrameBuffer(frameBuffer)
+    }
+
 }

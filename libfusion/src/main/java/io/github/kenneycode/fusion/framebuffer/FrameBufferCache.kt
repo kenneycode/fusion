@@ -60,5 +60,15 @@ object FrameBufferCache {
         }
     }
 
+    fun release() {
+        cache.entries.forEach {
+            it.value.entries.forEach { frameBufferMaps ->
+                frameBufferMaps.value.forEach { frameBuffer ->
+                    frameBuffer.releaseRef()
+                }
+            }
+        }
+    }
+
 }
 
