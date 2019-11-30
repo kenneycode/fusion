@@ -103,4 +103,15 @@ class GLProgram(val shader: Shader) : Ref() {
         }
     }
 
+    /**
+     *
+     * 释放资源
+     *
+     */
+    fun release() {
+        if (glIsProgram(program)) {
+            glDeleteProgram(program)
+        }
+    }
+
 }

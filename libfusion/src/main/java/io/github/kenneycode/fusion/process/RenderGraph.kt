@@ -247,7 +247,7 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
         while (!traversalQueue.isEmpty()) {
             val node = traversalQueue.removeFirst()
             if (node is RendererNode) {
-                node.renderer!!.release()
+                node.renderer.release()
             }
             traversalQueue.addAll(node.nextNodes)
         }

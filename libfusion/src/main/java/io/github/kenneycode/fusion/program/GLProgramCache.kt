@@ -46,5 +46,16 @@ object GLProgramCache {
         cache[glProgram.shader] = glProgram
     }
 
+    /**
+     *
+     * 释放资源
+     *
+     */
+    fun release() {
+        cache.values.forEach { glProgram ->
+            glProgram.release()
+        }
+    }
+
 }
 
