@@ -1,6 +1,5 @@
 package io.github.kenneycode.fusion.renderer
 
-import java.util.ArrayList
 import java.util.HashSet
 
 import io.github.kenneycode.fusion.common.Constants

@@ -2,6 +2,7 @@ package io.github.kenneycode.fusion.inputsource
 
 import io.github.kenneycode.fusion.context.GLContextPool
 import io.github.kenneycode.fusion.framebuffer.FrameBuffer
+import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderGraph
 import io.github.kenneycode.fusion.renderer.Renderer
 
@@ -27,9 +28,16 @@ abstract class InputSource {
      */
     fun addRenderer(renderer: Renderer) {
         renderers.add(renderer)
-        if (renderer is RenderGraph) {
-            renderer.outputTargetGLContext?.let {
-                GLContextPool.setGLContextForInputSource(this, it)
+        when (renderer) {
+            is RenderGraph -> {
+                renderer.outputTargetGLContext?.let {
+                    GLContextPool.setGLContextForInputSource(this, it)
+                }
+            }
+            is RenderChain -> {
+                renderer.outputTargetGLContext?.let {
+                    GLContextPool.setGLContextForInputSource(this, it)
+                }
             }
         }
     }
