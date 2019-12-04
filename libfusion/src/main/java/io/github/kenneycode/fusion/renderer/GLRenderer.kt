@@ -74,6 +74,13 @@ interface GLRenderer : Renderer {
 
     /**
      *
+     * 绑定参数
+     *
+     */
+    fun bindParamters()
+
+    /**
+     *
      * 解绑输入
      *
      */

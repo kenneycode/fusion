@@ -1,6 +1,5 @@
 package io.github.kenneycode.fusion.program
 
-import java.util.HashMap
 import io.github.kenneycode.fusion.common.Shader
 
 /**

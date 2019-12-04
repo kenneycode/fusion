@@ -31,14 +31,14 @@ import android.opengl.GLES20.glEnable
 open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER_2, fragmentShader: String = Constants.COMMON_FRAGMENT_SHADER_2) : GLRenderer {
 
     private val shader = Shader(vertexShader, fragmentShader)
-    protected var outputFrameBuffer: FrameBuffer? = null
     private lateinit var glProgram: GLProgram
     private val attributes = HashSet<Parameter>()
     private val uniforms = HashSet<Parameter>()
-    private var input: List<FrameBuffer>? = null
-    private var specifiedOutputWidth: Int = 0
-    private var specifiedOutputHeight: Int = 0
     private var vertexCount = 0
+    protected lateinit var inputFrameBuffers: List<FrameBuffer>
+    protected var outputFrameBuffer: FrameBuffer? = null
+    protected var specifiedOutputWidth: Int = 0
+    protected var specifiedOutputHeight: Int = 0
 
     /**
      *
@@ -118,15 +118,15 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER_
      *
      */
     override fun bindInput() {
-        if (input!!.isNotEmpty()) {
+        if (inputFrameBuffers.isNotEmpty()) {
             var textureIndex = '0'
             var i = 0
-            while (i < input!!.size) {
+            while (i < inputFrameBuffers.size) {
                 var textureKey = "u_texture"
                 if (i > 0) {
                     textureKey += textureIndex
                 }
-                setUniformTexture2D(textureKey, input!![i].texture)
+                setUniformTexture2D(textureKey, inputFrameBuffers[i].texture)
                 ++i
                 ++textureIndex
             }
@@ -139,12 +139,16 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER_
      *
      */
     override fun bindOutput() {
-        val outputWidth = if (specifiedOutputWidth > 0) specifiedOutputWidth else input!![0].width
-        val outputHeight = if (specifiedOutputHeight > 0) specifiedOutputHeight else input!![0].height
-        if (outputFrameBuffer == null) {
-            outputFrameBuffer = FrameBufferCache.obtainFrameBuffer(outputWidth, outputHeight)
+        val outputWidth = if (specifiedOutputWidth > 0) specifiedOutputWidth else inputFrameBuffers.first().width
+        val outputHeight = if (specifiedOutputHeight > 0) specifiedOutputHeight else inputFrameBuffers.first().height
+        outputFrameBuffer = outputFrameBuffer ?: FrameBufferCache.obtainFrameBuffer(outputWidth, outputHeight).apply {
+            bind(outputWidth, outputHeight)
         }
-        outputFrameBuffer!!.bind(outputWidth, outputHeight)
+    }
+
+    override fun bindParamters() {
+        glProgram.bindAttribute(attributes)
+        glProgram.bindUniform(uniforms)
     }
 
     /**
@@ -153,8 +157,6 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER_
      *
      */
     private fun performRendering() {
-        glProgram.bindAttribute(attributes)
-        glProgram.bindUniform(uniforms)
         glEnable(GL_BLEND)
         glDrawArrays(GL_TRIANGLES, 0, vertexCount)
         glDisable(GL_BLEND)
@@ -166,7 +168,7 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER_
      *
      */
     override fun unBindInput() {
-        input?.forEach {  frameBuffer ->
+        inputFrameBuffers?.forEach { frameBuffer ->
             frameBuffer.releaseRef()
         }
     }
@@ -203,7 +205,7 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER_
      *
      */
     override fun setInput(frameBuffers: List<FrameBuffer>) {
-        this.input = frameBuffers
+        this.inputFrameBuffers = frameBuffers
     }
 
     /**
@@ -256,6 +258,7 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER_
     override fun render(): FrameBuffer {
         bindInput()
         bindOutput()
+        bindParamters()
         performRendering()
         unBindInput()
         return outputFrameBuffer!!
