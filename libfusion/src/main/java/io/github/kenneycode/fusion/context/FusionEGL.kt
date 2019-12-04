@@ -16,7 +16,7 @@ import android.view.Surface
  *
  */
 
-class EGL {
+class FusionEGL {
 
     var eglContext = EGL14.EGL_NO_CONTEXT
 

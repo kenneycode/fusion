@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.util
 
 import android.graphics.Bitmap
+import android.opengl.GLES11Ext
 
 import java.nio.ByteBuffer
 
@@ -28,6 +29,7 @@ import android.opengl.GLES20.glIsTexture
 import android.opengl.GLES20.glReadPixels
 import android.opengl.GLES20.glTexImage2D
 import android.opengl.GLES20.glTexParameteri
+import android.opengl.GLES30
 
 /**
  *
@@ -58,6 +60,24 @@ class GLUtil {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
             glBindTexture(GL_TEXTURE_2D, 0)
+            return textures[0]
+        }
+
+        /**
+         *
+         * 创建一个OES纹理
+         *
+         * @return 纹理id
+         */
+        fun createOESTexture() : Int {
+            val textures = IntArray(1)
+            GLES30.glGenTextures(textures.size, textures, 0)
+            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[0])
+            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE)
+            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE)
+            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR)
+            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
             return textures[0]
         }
 
@@ -140,6 +160,32 @@ class GLUtil {
             buffer.position(0)
             bitmap.copyPixelsFromBuffer(buffer)
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0)
+            glBindFramebuffer(GL_FRAMEBUFFER, 0)
+            glDeleteFramebuffers(frameBuffers.size, frameBuffers, 0)
+            return bitmap
+        }
+
+        /**
+         *
+         * 将OES纹理转换为bitmap
+         *
+         * @param texture 纹理id
+         * @param width 宽度
+         * @param height 高度
+         *
+         */
+        fun oesTexture2Bitmap(texture: Int, width: Int, height: Int): Bitmap {
+            val buffer = ByteBuffer.allocate(width * height * 4)
+            val frameBuffers = IntArray(1)
+            glGenFramebuffers(frameBuffers.size, frameBuffers, 0)
+            glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture)
+            glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[0])
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture, 0)
+            glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            buffer.position(0)
+            bitmap.copyPixelsFromBuffer(buffer)
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0, 0)
             glBindFramebuffer(GL_FRAMEBUFFER, 0)
             glDeleteFramebuffers(frameBuffers.size, frameBuffers, 0)
             return bitmap

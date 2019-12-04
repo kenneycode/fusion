@@ -1,7 +1,6 @@
 package io.github.kenneycode.fusion.framebuffer
 
 import java.util.HashMap
-import java.util.LinkedList
 import io.github.kenneycode.fusion.common.Size
 
 /**
@@ -40,7 +39,7 @@ object FrameBufferCache {
         if (cache[tid]!![size]!!.isEmpty()) {
             cache[tid]!![size]!!.add(FrameBuffer())
         } else {
-            cache[tid]!![size]!!.first().addRef()
+            cache[tid]!![size]!!.first().increaseRef()
         }
         return cache[tid]!![size]!!.removeAt(0)
     }
@@ -64,7 +63,7 @@ object FrameBufferCache {
         cache.entries.forEach {
             it.value.entries.forEach { frameBufferMaps ->
                 frameBufferMaps.value.forEach { frameBuffer ->
-                    frameBuffer.releaseRef()
+                    frameBuffer.decreaseRef()
                 }
             }
         }

@@ -14,18 +14,8 @@ class Constants {
 
     companion object {
 
-        val COMMON_VERTEX_SHADER = "precision mediump float;\n" +
-                "attribute vec4 a_position;\n" +
-                "void main() {\n" +
-                "    gl_Position = a_position;\n" +
-                "}"
-
-        val COMMON_FRAGMENT_SHADER = "precision mediump float;\n" +
-                "void main() {\n" +
-                "    gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);\n" +
-                "}"
-
-        val COMMON_VERTEX_SHADER_2 = "precision mediump float;\n" +
+        val COMMON_VERTEX_SHADER =
+                "precision mediump float;\n" +
                 "attribute vec4 a_position;\n" +
                 "attribute vec2 a_textureCoordinate;\n" +
                 "varying vec2 v_textureCoordinate;\n" +
@@ -34,13 +24,32 @@ class Constants {
                 "    gl_Position = a_position;\n" +
                 "}"
 
-        val COMMON_FRAGMENT_SHADER_2 = "precision mediump float;\n" +
+        val COMMON_FRAGMENT_SHADER =
+                "precision mediump float;\n" +
                 "varying vec2 v_textureCoordinate;\n" +
                 "uniform sampler2D u_texture;\n" +
                 "void main() {\n" +
                 "    gl_FragColor = texture2D(u_texture, v_textureCoordinate);\n" +
                 "}"
 
+        val OES_VERTEX_SHADER =
+                "precision mediump float;\n" +
+                "attribute vec4 a_position;\n" +
+                "attribute vec4 a_textureCoordinate;\n" +
+                "varying vec2 v_textureCoordinate;\n" +
+                "uniform mat4 u_stMatrix;\n" +
+                "void main() {\n" +
+                "    v_textureCoordinate = (u_stMatrix * a_textureCoordinate).xy;\n" +
+                "    gl_Position = a_position;\n" +
+                "}"
+
+        val OES_FRAGMENT_SHADER =
+                "#extension GL_OES_EGL_image_external : require\n" +
+                "varying vec2 v_textureCoordinate;\n" +
+                "uniform samplerExternalOES u_texture;\n" +
+                "void main() {\n" +
+                "   gl_FragColor = texture2D(u_texture, v_textureCoordinate);\n" +
+                "}"
 
         val COMMON_VERTEX = floatArrayOf(-1f, -1f, -1f, 1f, 1f, 1f, -1f, -1f, 1f, 1f, 1f, -1f)
         val COMMON_VERTEX_FLIP_X = floatArrayOf(1f, -1f, 1f, 1f, -1f, 1f, 1f, -1f, -1f, 1f, -1f, -1f)

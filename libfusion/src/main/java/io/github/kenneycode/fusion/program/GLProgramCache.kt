@@ -29,7 +29,7 @@ object GLProgramCache {
         if (!cache.containsKey(shader)) {
             cache[shader] = GLProgram(shader)
         } else {
-            cache[shader]!!.addRef()
+            cache[shader]!!.increaseRef()
         }
         return cache[shader]!!
     }

@@ -96,8 +96,8 @@ class GLProgram(val shader: Shader) : Ref() {
      * 减少引用计数，当引用计数为0时放回GLProgramCache
      *
      */
-    override fun releaseRef() {
-        super.releaseRef()
+    override fun decreaseRef() {
+        super.decreaseRef()
         if (refCount == 0) {
             GLProgramCache.releaseGLProgram(this)
         }

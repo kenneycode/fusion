@@ -9,7 +9,7 @@ import android.view.TextureView
 import java.util.LinkedList
 
 import io.github.kenneycode.fusion.common.FusionGLView
-import io.github.kenneycode.fusion.context.GLThread
+import io.github.kenneycode.fusion.context.FusionGLThread
 import io.github.kenneycode.fusion.framebuffer.FrameBuffer
 import io.github.kenneycode.fusion.renderer.DisplayRenderer
 
@@ -25,7 +25,7 @@ import io.github.kenneycode.fusion.renderer.DisplayRenderer
 
 class FusionGLTextureView : TextureView, FusionGLView {
 
-    private var glThread: GLThread? = null
+    private var glThread: FusionGLThread? = null
     private var displayRenderer = DisplayRenderer()
     private val pendingTasks = LinkedList<() -> Unit>()
     private var surfaceWidth = 0
@@ -54,7 +54,7 @@ class FusionGLTextureView : TextureView, FusionGLView {
             override fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture?, width: Int, height: Int) {
                 surfaceWidth = width
                 surfaceHeight = height
-                glThread = GLThread().apply {
+                glThread = FusionGLThread().apply {
                     surface = Surface(surfaceTexture)
                     init(surface)
                     pendingTasks.forEach { task ->

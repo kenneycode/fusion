@@ -12,7 +12,7 @@ package io.github.kenneycode.fusion.context
 
 class SimpleGLContext : GLContext {
 
-    private val glThread = GLThread()
+    private val glThread = FusionGLThread()
 
     init {
         glThread.init()

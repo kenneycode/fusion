@@ -21,7 +21,7 @@ open class Ref {
      * @param count 要增加的引用计数
      *
      */
-    fun addRef(count: Int = 1) {
+    fun increaseRef(count: Int = 1) {
         refCount += count
     }
 
@@ -30,7 +30,7 @@ open class Ref {
      * 减少1个引用计数
      *
      */
-    open fun releaseRef() {
+    open fun decreaseRef() {
         --refCount
     }
 

@@ -17,11 +17,11 @@ import java.util.concurrent.Semaphore
  *
  */
 
-class GLThread {
+class FusionGLThread {
 
-    private val handlerThread : HandlerThread = HandlerThread("GLThread")
+    private val handlerThread : HandlerThread = HandlerThread("FusionGLThread")
     private lateinit var handler : Handler
-    lateinit var egl : EGL
+    lateinit var egl : FusionEGL
 
     /**
      *
@@ -34,7 +34,7 @@ class GLThread {
     fun init(surface: Surface? = null, shareContext: EGLContext = EGL14.EGL_NO_CONTEXT) {
         handlerThread.start()
         handler = Handler(handlerThread.looper)
-        egl = EGL()
+        egl = FusionEGL()
         egl.init(surface, shareContext)
         handler.post {
             egl.bind()

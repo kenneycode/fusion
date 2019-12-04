@@ -60,6 +60,26 @@ interface GLRenderer : Renderer {
 
     /**
      *
+     * 设置OES纹理参数
+     *
+     * @param key 纹理参数名
+     * @param value 纹理id
+     *
+     */
+    fun setUniformOESTexture(key: String, value: Int)
+
+    /**
+     *
+     * 设置4*4 Matrix参数
+     *
+     * @param key 纹理参数名
+     * @param value 4*4 Matrix
+     *
+     */
+    fun setUniformMat4(key: String, value: FloatArray)
+
+    /**
+     *
      * 绑定输入
      *
      */

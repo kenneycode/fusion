@@ -4,6 +4,7 @@ import android.opengl.GLES20
 import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
 
 import android.opengl.GLES20.glViewport
+import io.github.kenneycode.fusion.common.DataKeys
 
 /**
  *
@@ -17,13 +18,6 @@ import android.opengl.GLES20.glViewport
 
 class DisplayRenderer : SimpleRenderer() {
 
-    companion object {
-
-        const val KEY_DISPLAY_WIDTH = "KEY_DISPLAY_WIDTH"
-        const val KEY_DISPLAY_HEIGHT = "KEY_DISPLAY_HEIGHT"
-
-    }
-
     private var displayWidth: Int = 0
     private var displayHeight: Int = 0
 
@@ -33,7 +27,7 @@ class DisplayRenderer : SimpleRenderer() {
     }
 
     override fun update(data: MutableMap<String, Any>): Boolean {
-        setDisplaySize(data[KEY_DISPLAY_WIDTH] as Int, data[KEY_DISPLAY_HEIGHT] as Int)
+        setDisplaySize(data[DataKeys.KEY_DISPLAY_WIDTH] as Int, data[DataKeys.KEY_DISPLAY_HEIGHT] as Int)
         return true
     }
 

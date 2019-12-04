@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import io.github.kenneycode.fusion.common.DataKeys
 import io.github.kenneycode.fusion.demo.R
 import io.github.kenneycode.fusion.demo.Util
 import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
@@ -49,8 +50,8 @@ class SampleGLSurfaceViewUsage0 : Fragment() {
 
                     // 执行渲染
                     renderGraph.update(mutableMapOf(
-                            DisplayRenderer.KEY_DISPLAY_WIDTH to surfaceWidth,
-                            DisplayRenderer.KEY_DISPLAY_HEIGHT to surfaceHeight
+                            DataKeys.KEY_DISPLAY_WIDTH to surfaceWidth,
+                            DataKeys.KEY_DISPLAY_HEIGHT to surfaceHeight
                     ))
                     renderGraph.render()
 

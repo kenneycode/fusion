@@ -31,6 +31,7 @@ class FrameBuffer : Ref() {
     var texture = 0
     var frameBuffer = 0
     var retain = false
+    var hasExternalTexture = false
 
     /**
      *
@@ -86,15 +87,19 @@ class FrameBuffer : Ref() {
      * 减少引用计数，当引用计数为0时放回FrameBufferCache
      *
      */
-    override fun releaseRef() {
-        super.releaseRef()
-        if (refCount <= 0 && !retain) {
-            FrameBufferCache.releaseFrameBuffer(this)
+    override fun decreaseRef() {
+        if (!retain) {
+            super.decreaseRef()
+            if (refCount <= 0) {
+                FrameBufferCache.releaseFrameBuffer(this)
+            }
         }
     }
 
     fun release() {
-        GLUtil.deleteTexture(texture)
+        if (!hasExternalTexture) {
+            GLUtil.deleteTexture(texture)
+        }
         GLUtil.deleteFrameBuffer(frameBuffer)
     }
 

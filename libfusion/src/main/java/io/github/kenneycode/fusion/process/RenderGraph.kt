@@ -224,8 +224,9 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
                     node.outputTarget.onInputReady(node.input)
                 }
             }
+            node.input.clear()
             if (node.nextNodes.isNotEmpty()) {
-                output.addRef(node.nextNodes.size - 1)
+                output.increaseRef(node.nextNodes.size - 1)
             }
             node.nextNodes.forEach { nextNode ->
                 nextNode.input.add(output)
@@ -261,8 +262,8 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
     private open inner class Node(var layer: Int = 0) {
 
         var needRender = true
-        var input: MutableList<FrameBuffer> = ArrayList()
-        var nextNodes: MutableList<Node> = ArrayList()
+        var input = mutableListOf<FrameBuffer>()
+        var nextNodes= mutableListOf<Node>()
 
         fun addNext(nextNode: Node) {
             nextNodes.add(nextNode)
