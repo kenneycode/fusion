@@ -29,7 +29,7 @@ import android.opengl.GLES20.glUseProgram
 
 class GLProgram(val shader: Shader) : Ref() {
 
-    private var program = 0
+    var program = 0
 
     /**
      *

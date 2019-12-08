@@ -1,5 +1,6 @@
 package io.github.kenneycode.fusion.renderer
 
+import android.opengl.GLES20
 import java.util.HashSet
 
 import io.github.kenneycode.fusion.common.Constants
@@ -59,8 +60,6 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER,
      *
      */
     override fun initParameter() {
-        setPositions(Constants.COMMON_VERTEX)
-        setTextureCoordinates(Constants.COMMON_TEXTURE_COORDINATE)
     }
 
     /**
@@ -142,6 +141,24 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER,
 
     /**
      *
+     * @param flipX 水平翻转
+     * @param flipY 垂直翻转
+     *
+     */
+    override fun setFlip(flipX: Boolean, flipY: Boolean) {
+        if (!flipX && !flipY) {
+            setPositions(Constants.COMMON_VERTEX)
+        } else if (flipX && !flipY) {
+            setPositions(Constants.COMMON_VERTEX_FLIP_X)
+        } else if (!flipX && flipY) {
+            setPositions(Constants.COMMON_VERTEX_FLIP_Y)
+        } else {
+            setPositions(Constants.COMMON_VERTEX_FLIP_XY)
+        }
+    }
+
+    /**
+     *
      * 绑定输入
      *
      */
@@ -175,6 +192,12 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER,
     }
 
     override fun bindParamters() {
+        if (GLES20.glGetAttribLocation(glProgram.program, Constants.POSITION_PARAM_KEY) >= 0 && findParameter(attributes, Constants.POSITION_PARAM_KEY) == null) {
+            setPositions(Constants.COMMON_VERTEX)
+        }
+        if (GLES20.glGetAttribLocation(glProgram.program, Constants.TEXTURE_COORDINATE_PARAM_KEY) >= 0 && findParameter(attributes, Constants.TEXTURE_COORDINATE_PARAM_KEY) == null) {
+            setTextureCoordinates(Constants.COMMON_TEXTURE_COORDINATE)
+        }
         glProgram.bindAttribute(attributes)
         glProgram.bindUniform(uniforms)
     }

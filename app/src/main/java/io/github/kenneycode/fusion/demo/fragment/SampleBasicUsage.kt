@@ -35,7 +35,9 @@ class SampleBasicUsage : Fragment() {
         val image = FusionImageSource(Util.decodeBitmapFromAssets("test.png")!!)
 
         // 创建一个简单渲染器
-        val simpleRenderer = SimpleRenderer()
+        val simpleRenderer = SimpleRenderer().apply {
+            setFlip(false, true)
+        }
 
         // 创建RenderGraph
         val renderGraph = RenderGraph(simpleRenderer)

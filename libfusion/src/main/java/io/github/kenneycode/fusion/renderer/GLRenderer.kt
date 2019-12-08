@@ -80,6 +80,14 @@ interface GLRenderer : Renderer {
 
     /**
      *
+     * @param flipX 水平翻转
+     * @param flipY 垂直翻转
+     *
+     */
+    fun setFlip(flipX: Boolean, flipY: Boolean)
+
+    /**
+     *
      * 绑定输入
      *
      */

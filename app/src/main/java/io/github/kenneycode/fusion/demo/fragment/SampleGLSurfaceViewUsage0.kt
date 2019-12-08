@@ -68,7 +68,9 @@ class SampleGLSurfaceViewUsage0 : Fragment() {
                     val simpleRenderer = SimpleRenderer()
 
                     // 创建一个显示渲染器
-                    val displayRenderer = DisplayRenderer()
+                    val displayRenderer = DisplayRenderer().apply {
+                        setFlip(false, true)
+                    }
 
                     // 创建RenderGraph
                     renderGraph = RenderGraph(simpleRenderer).apply {
