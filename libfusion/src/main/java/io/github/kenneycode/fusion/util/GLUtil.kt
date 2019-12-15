@@ -30,6 +30,8 @@ import android.opengl.GLES20.glReadPixels
 import android.opengl.GLES20.glTexImage2D
 import android.opengl.GLES20.glTexParameteri
 import android.opengl.GLES30
+import android.opengl.Matrix
+import io.github.kenneycode.fusion.common.Constants
 
 /**
  *
@@ -206,6 +208,89 @@ class GLUtil {
                     frameBuffer.width,
                     frameBuffer.height
             )
+        }
+
+        fun createMVPMatrix(
+                translateX: Float = 0f, translateY: Float = 0f, translateZ: Float = 0f,
+                rotateX: Float = 0f, rotateY: Float = 0f, rotateZ: Float = 0f,
+                scaleX: Float = 1f, scaleY: Float = 1f, scaleZ: Float = 1f,
+                cameraPositionX: Float = 0f, cameraPositionY: Float = 0f, cameraPositionZ: Float = 10f,
+                lookAtX: Float = 0f, lookAtY: Float = 0f, lookAtZ: Float = 0f,
+                cameraUpX: Float = 0f, cameraUpY: Float = 1f, cameraUpZ: Float = 0f,
+                nearPlaneLeft: Float = -1f, nearPlaneTop: Float = 1f, nearPlaneRight: Float = 1f, nearPlaneBottom: Float = -1f,
+                nearPlane: Float = 5f,
+                farPlane: Float = 15f
+        ): FloatArray {
+            val modelMatrix = createModelMatrix(
+                    translateX, translateY, translateZ,
+                    rotateX, rotateY, rotateZ,
+                    scaleX, scaleY, scaleZ
+            )
+            val viewMatrix = createViewMatrix(
+                    cameraPositionX, cameraPositionY, cameraPositionZ,
+                    lookAtX, lookAtY, lookAtZ,
+                    cameraUpX, cameraUpY, cameraUpZ
+            )
+            val projectionMatrix = createProjectionMatrix(
+                    nearPlaneLeft, nearPlaneTop, nearPlaneRight, nearPlaneBottom,
+                    nearPlane,
+                    farPlane
+            )
+            return Constants.IDENTITY_MATRIX.apply {
+                Matrix.multiplyMM(this, 0, viewMatrix, 0, modelMatrix, 0)
+                Matrix.multiplyMM(this, 0, projectionMatrix, 0, this, 0)
+            }
+        }
+
+        fun createModelMatrix(
+                translateX: Float, translateY: Float, translateZ: Float,
+                rotateX: Float, rotateY: Float, rotateZ: Float,
+                scaleX: Float, scaleY: Float, scaleZ: Float
+        ): FloatArray {
+            val translateMatrix = Constants.IDENTITY_MATRIX
+            val rotateMatrix = Constants.IDENTITY_MATRIX
+            val scaleMatrix = Constants.IDENTITY_MATRIX
+            Matrix.translateM(translateMatrix, 0, translateX, translateY, translateZ)
+            Matrix.rotateM(rotateMatrix, 0, rotateX, 1f, 0f, 0f)
+            Matrix.rotateM(rotateMatrix, 0, rotateY, 0f, 1f, 0f)
+            Matrix.rotateM(rotateMatrix, 0, rotateZ, 0f, 0f, 1f)
+            Matrix.scaleM(scaleMatrix, 0, scaleX, scaleY, scaleZ)
+            return Constants.IDENTITY_MATRIX.apply {
+                Matrix.multiplyMM(this, 0, rotateMatrix, 0, scaleMatrix, 0)
+                Matrix.multiplyMM(this, 0, this, 0, translateMatrix, 0)
+            }
+        }
+
+        fun createViewMatrix(
+                cameraPositionX: Float, cameraPositionY: Float, cameraPositionZ: Float,
+                lookAtX: Float, lookAtY: Float, lookAtZ: Float,
+                cameraUpX: Float, cameraUpY: Float, cameraUpZ: Float
+        ): FloatArray {
+            return Constants.IDENTITY_MATRIX.apply {
+                Matrix.setLookAtM(
+                        this,
+                        0,
+                        cameraPositionX, cameraPositionY, cameraPositionZ,
+                        lookAtX, lookAtY, lookAtZ,
+                        cameraUpX, cameraUpY, cameraUpZ
+                )
+            }
+        }
+
+        fun createProjectionMatrix(
+                nearPlaneLeft: Float, nearPlaneTop: Float, nearPlaneRight: Float, nearPlaneBottom: Float,
+                nearPlane: Float,
+                farPlane: Float
+        ): FloatArray {
+            return Constants.IDENTITY_MATRIX.apply {
+                Matrix.frustumM(
+                        this,
+                        0,
+                        nearPlaneLeft, nearPlaneRight, nearPlaneBottom, nearPlaneTop,
+                        nearPlane,
+                        farPlane
+                )
+            }
         }
 
     }

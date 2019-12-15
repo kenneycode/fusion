@@ -69,9 +69,10 @@ class Constants {
         val SIMPLE_VERTEX_FLIP_Y = floatArrayOf(-1f, 1f, -1f, -1f, 1f, -1f, -1f, 1f, 1f, -1f, 1f, 1f)
         val SIMPLE_VERTEX_FLIP_XY = floatArrayOf(1f, 1f, 1f, -1f, -1f, -1f, 1f, 1f, -1f, -1f, -1f, 1f)
         val SIMPLE_TEXTURE_COORDINATE = floatArrayOf(0f, 0f, 0f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 0f)
-        val IDENTITY_MATRIX = FloatArray(16).apply {
-            Matrix.setIdentityM(this, 0)
-        }
+        val IDENTITY_MATRIX: FloatArray
+            get() = FloatArray(16).apply {
+                        Matrix.setIdentityM(this, 0)
+                    }
 
         val POSITION_PARAM_KEY = "a_position"
         val TEXTURE_COORDINATE_PARAM_KEY = "a_textureCoordinate"
