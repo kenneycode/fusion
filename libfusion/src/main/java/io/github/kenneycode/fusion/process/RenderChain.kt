@@ -69,7 +69,7 @@ class RenderChain(rootRenderer: Renderer) : Renderer {
      * @param next OutputTarget
      *
      */
-    fun addOutputTarget(next: OutputTarget) {
+    fun setOutputTarget(next: OutputTarget) {
         renderGraph.addOutputTarget(tailRenderer, next)
     }
 

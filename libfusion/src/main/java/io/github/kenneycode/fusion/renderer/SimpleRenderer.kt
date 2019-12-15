@@ -198,7 +198,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
     override fun bindOutput() {
         val outputWidth = if (specifiedOutputWidth > 0) specifiedOutputWidth else inputFrameBuffers.first().width
         val outputHeight = if (specifiedOutputHeight > 0) specifiedOutputHeight else inputFrameBuffers.first().height
-        outputFrameBuffer = (outputFrameBuffer ?: FrameBufferCache.obtainFrameBuffer(outputWidth, outputHeight)).apply {
+        outputFrameBuffer = FrameBufferCache.obtainFrameBuffer(outputWidth, outputHeight).apply {
             bind(outputWidth, outputHeight)
         }
     }

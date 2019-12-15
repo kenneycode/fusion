@@ -23,13 +23,14 @@ class FusionImageSource(private val image: Bitmap) : InputSource() {
      * 开始处理
      *
      * @param data 传入的数据
+     *
      */
     fun process(data: MutableMap<String, Any> = mutableMapOf()) {
         GLContextPool.obtainGLContext(this)?.let { glContext ->
             glContext.runOnGLContext {
                 val imageTexture = GLUtil.createTexture()
                 GLUtil.bitmap2Texture(imageTexture, image)
-                val frameBuffer = FrameBufferCache.obtainFrameBuffer().apply {
+                val frameBuffer = FrameBufferCache.obtainFrameBuffer(image.width, image.height).apply {
                     width = image.width
                     height = image.height
                     texture = imageTexture

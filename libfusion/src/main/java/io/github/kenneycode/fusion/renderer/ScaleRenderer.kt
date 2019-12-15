@@ -20,7 +20,7 @@ class ScaleRenderer : SimpleRenderer() {
     override fun bindOutput() {
         val outputWidth = (scale * (specifiedOutputWidth.takeIf { it > 0 } ?: inputFrameBuffers.first().width)).toInt()
         val outputHeight = (scale * (specifiedOutputHeight.takeIf { it > 0 } ?: inputFrameBuffers.first().height)).toInt()
-        outputFrameBuffer = outputFrameBuffer ?: FrameBufferCache.obtainFrameBuffer(outputWidth, outputHeight).apply {
+        outputFrameBuffer = FrameBufferCache.obtainFrameBuffer(outputWidth, outputHeight).apply {
             bind(outputWidth, outputHeight)
         }
     }

@@ -10,8 +10,9 @@ import io.github.kenneycode.fusion.demo.Util
 
 import io.github.kenneycode.fusion.inputsource.FusionImageSource
 import io.github.kenneycode.fusion.outputtarget.FusionGLTextureView
-import io.github.kenneycode.fusion.process.RenderGraph
-import io.github.kenneycode.fusion.renderer.SimpleRenderer
+import io.github.kenneycode.fusion.process.RenderChain
+import io.github.kenneycode.fusion.renderer.CropRenderer
+import io.github.kenneycode.fusion.renderer.ScaleRenderer
 
 /**
  *
@@ -34,19 +35,27 @@ class SampleBasicUsage : Fragment() {
         // 创建图片输入源
         val image = FusionImageSource(Util.decodeBitmapFromAssets("test.png")!!)
 
-        // 创建一个简单渲染器
-        val simpleRenderer = SimpleRenderer().apply {
+        // 创建一个scale renderer
+        val scaleRenderer = ScaleRenderer().apply {
             setFlip(false, true)
+            scale = 0.8f
         }
 
-        // 创建RenderGraph
-        val renderGraph = RenderGraph(simpleRenderer)
+        // 创建一个crop renderer
+        val cropRenderer = CropRenderer().apply {
+            setCropRect(0.1f, 0.9f, 0.8f, 0.2f)
+        }
 
-        // 设置RenderGraph的输出目标
-        renderGraph.addOutputTarget(simpleRenderer, view.findViewById<FusionGLTextureView>(R.id.fusionGLTextureView))
+        // 创建RenderChain
+        val renderChain = RenderChain(scaleRenderer).apply {
+            addNextRenderer(cropRenderer)
+        }
+
+        // 设置RenderChain的输出目标
+        renderChain.setOutputTarget(view.findViewById<FusionGLTextureView>(R.id.fusionGLTextureView))
 
         // 给输入源设置渲染器
-        image.addRenderer(renderGraph)
+        image.addRenderer(renderChain)
 
         // 开始处理
         image.process()
