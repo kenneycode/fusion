@@ -147,7 +147,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun setMVPMatrix(value: FloatArray) {
-        setUniformMat4(Constants.MVP_MATRIX_PARAM_KEY,  Constants.IDENTITY_MATRIX)
+        setUniformMat4(Constants.MVP_MATRIX_PARAM_KEY,  value)
     }
 
     /**
