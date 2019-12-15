@@ -143,11 +143,10 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      * 设置MVP
      *
-     * @param key MVP矩阵参数名
      * @param value 4*4 MVP Matrix
      *
      */
-    override fun setMVPMatrix(key: String, value: FloatArray) {
+    override fun setMVPMatrix(value: FloatArray) {
         setUniformMat4(Constants.MVP_MATRIX_PARAM_KEY,  Constants.IDENTITY_MATRIX)
     }
 
@@ -227,7 +226,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
             setTextureCoordinates(Constants.SIMPLE_TEXTURE_COORDINATE)
         }
         if (GLES20.glGetUniformLocation(glProgram.program, Constants.MVP_MATRIX_PARAM_KEY) >= 0 && findParameter(uniforms, Constants.MVP_MATRIX_PARAM_KEY) == null) {
-            setMVPMatrix(Constants.MVP_MATRIX_PARAM_KEY,  Constants.IDENTITY_MATRIX)
+            setMVPMatrix(Constants.IDENTITY_MATRIX)
         }
     }
 

@@ -82,11 +82,10 @@ interface GLRenderer : Renderer {
      *
      * 设置MVP
      *
-     * @param key MVP矩阵参数名
      * @param value 4*4 MVP Matrix
      *
      */
-    fun setMVPMatrix(key: String, value: FloatArray)
+    fun setMVPMatrix(value: FloatArray)
 
     /**
      *
