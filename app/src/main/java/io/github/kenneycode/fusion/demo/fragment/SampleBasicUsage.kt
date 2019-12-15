@@ -9,10 +9,10 @@ import io.github.kenneycode.fusion.demo.R
 import io.github.kenneycode.fusion.demo.Util
 
 import io.github.kenneycode.fusion.inputsource.FusionImageSource
-import io.github.kenneycode.fusion.outputtarget.FusionGLTextureView
 import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.renderer.CropRenderer
 import io.github.kenneycode.fusion.renderer.ScaleRenderer
+import kotlinx.android.synthetic.main.fragment_sample_fusion_gl_texture_view.*
 
 /**
  *
@@ -52,7 +52,7 @@ class SampleBasicUsage : Fragment() {
         }
 
         // 设置RenderChain的输出目标
-        renderChain.setOutputTarget(view.findViewById<FusionGLTextureView>(R.id.fusionGLTextureView))
+        renderChain.setOutputTarget(fusionGLTextureView)
 
         // 给输入源设置渲染器
         image.addRenderer(renderChain)
