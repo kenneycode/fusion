@@ -37,7 +37,7 @@ interface GLRenderer : Renderer {
      * @param positions 顶点坐标数组
      *
      */
-    fun setPositions(positions: FloatArray)
+    fun setPositions(positions: FloatArray, componentCount: Int = 2)
 
     /**
      *

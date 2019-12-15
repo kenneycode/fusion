@@ -83,9 +83,9 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER,
      * @param positions 顶点坐标数组
      *
      */
-    override fun setPositions(positions: FloatArray) {
-        setAttributeFloats(Constants.POSITION_PARAM_KEY, positions, 2)
-        vertexCount = positions.size / 2
+    override fun setPositions(positions: FloatArray, componentCount: Int) {
+        setAttributeFloats(Constants.POSITION_PARAM_KEY, positions, componentCount)
+        vertexCount = positions.size / componentCount
     }
 
     /**

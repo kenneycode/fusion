@@ -1,6 +1,5 @@
 package io.github.kenneycode.fusion.renderer
 
-import android.opengl.GLES20
 import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
 
 import android.opengl.GLES20.glViewport
@@ -32,10 +31,9 @@ class DisplayRenderer : SimpleRenderer() {
     }
 
     override fun bindOutput() {
-        if (outputFrameBuffer == null) {
-            outputFrameBuffer = FrameBufferCache.obtainFrameBuffer()
+        outputFrameBuffer = (outputFrameBuffer ?: FrameBufferCache.obtainFrameBuffer()).apply {
+            bind()
         }
-        outputFrameBuffer!!.bind()
         glViewport(0, 0, displayWidth, displayHeight)
     }
 
