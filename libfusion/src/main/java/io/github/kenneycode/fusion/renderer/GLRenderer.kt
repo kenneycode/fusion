@@ -80,6 +80,16 @@ interface GLRenderer : Renderer {
 
     /**
      *
+     * 设置MVP
+     *
+     * @param key MVP矩阵参数名
+     * @param value 4*4 MVP Matrix
+     *
+     */
+    fun setMVPMatrix(key: String, value: FloatArray)
+
+    /**
+     *
      * @param flipX 水平翻转
      * @param flipY 垂直翻转
      *

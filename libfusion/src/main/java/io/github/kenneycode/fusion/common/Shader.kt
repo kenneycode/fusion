@@ -10,7 +10,7 @@ package io.github.kenneycode.fusion.common
  *
  */
 
-class Shader constructor(var vertexShader: String = Constants.COMMON_VERTEX_SHADER, var fragmentShader: String = Constants.COMMON_FRAGMENT_SHADER) {
+class Shader constructor(var vertexShader: String = Constants.SIMPLE_VERTEX_SHADER, var fragmentShader: String = Constants.SIMPLE_FRAGMENT_SHADER) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

@@ -30,7 +30,7 @@ import io.github.kenneycode.fusion.parameter.Mat4Parameter
  *
  */
 
-open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER, fragmentShader: String = Constants.COMMON_FRAGMENT_SHADER) : GLRenderer {
+open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fragmentShader: String = Constants.SIMPLE_FRAGMENT_SHADER) : GLRenderer {
 
     private val shader = Shader(vertexShader, fragmentShader)
     private lateinit var glProgram: GLProgram
@@ -141,19 +141,31 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER,
 
     /**
      *
+     * 设置MVP
+     *
+     * @param key MVP矩阵参数名
+     * @param value 4*4 MVP Matrix
+     *
+     */
+    override fun setMVPMatrix(key: String, value: FloatArray) {
+        setUniformMat4(Constants.MVP_MATRIX_PARAM_KEY,  Constants.IDENTITY_MATRIX)
+    }
+
+    /**
+     *
      * @param flipX 水平翻转
      * @param flipY 垂直翻转
      *
      */
     override fun setFlip(flipX: Boolean, flipY: Boolean) {
         if (!flipX && !flipY) {
-            setPositions(Constants.COMMON_VERTEX)
+            setPositions(Constants.SIMPLE_VERTEX)
         } else if (flipX && !flipY) {
-            setPositions(Constants.COMMON_VERTEX_FLIP_X)
+            setPositions(Constants.SIMPLE_VERTEX_FLIP_X)
         } else if (!flipX && flipY) {
-            setPositions(Constants.COMMON_VERTEX_FLIP_Y)
+            setPositions(Constants.SIMPLE_VERTEX_FLIP_Y)
         } else {
-            setPositions(Constants.COMMON_VERTEX_FLIP_XY)
+            setPositions(Constants.SIMPLE_VERTEX_FLIP_XY)
         }
     }
 
@@ -191,15 +203,32 @@ open class SimpleRenderer(vertexShader: String = Constants.COMMON_VERTEX_SHADER,
         }
     }
 
+    /**
+     *
+     * 绑定参数
+     *
+     */
     override fun bindParamters() {
-        if (GLES20.glGetAttribLocation(glProgram.program, Constants.POSITION_PARAM_KEY) >= 0 && findParameter(attributes, Constants.POSITION_PARAM_KEY) == null) {
-            setPositions(Constants.COMMON_VERTEX)
-        }
-        if (GLES20.glGetAttribLocation(glProgram.program, Constants.TEXTURE_COORDINATE_PARAM_KEY) >= 0 && findParameter(attributes, Constants.TEXTURE_COORDINATE_PARAM_KEY) == null) {
-            setTextureCoordinates(Constants.COMMON_TEXTURE_COORDINATE)
-        }
+        checkDefaultParameters()
         glProgram.bindAttribute(attributes)
         glProgram.bindUniform(uniforms)
+    }
+
+    /**
+     *
+     * 给一些预定的参数设置默认值
+     *
+     */
+    private fun checkDefaultParameters() {
+        if (GLES20.glGetAttribLocation(glProgram.program, Constants.POSITION_PARAM_KEY) >= 0 && findParameter(attributes, Constants.POSITION_PARAM_KEY) == null) {
+            setPositions(Constants.SIMPLE_VERTEX)
+        }
+        if (GLES20.glGetAttribLocation(glProgram.program, Constants.TEXTURE_COORDINATE_PARAM_KEY) >= 0 && findParameter(attributes, Constants.TEXTURE_COORDINATE_PARAM_KEY) == null) {
+            setTextureCoordinates(Constants.SIMPLE_TEXTURE_COORDINATE)
+        }
+        if (GLES20.glGetUniformLocation(glProgram.program, Constants.MVP_MATRIX_PARAM_KEY) >= 0 && findParameter(uniforms, Constants.MVP_MATRIX_PARAM_KEY) == null) {
+            setMVPMatrix(Constants.MVP_MATRIX_PARAM_KEY,  Constants.IDENTITY_MATRIX)
+        }
     }
 
     /**
