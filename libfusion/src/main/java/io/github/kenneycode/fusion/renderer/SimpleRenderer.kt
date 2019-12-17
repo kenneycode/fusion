@@ -152,6 +152,8 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
 
     /**
      *
+     * 设置渲染翻转
+     *
      * @param flipX 水平翻转
      * @param flipY 垂直翻转
      *
