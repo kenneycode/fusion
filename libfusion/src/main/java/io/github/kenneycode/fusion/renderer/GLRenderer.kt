@@ -114,7 +114,7 @@ interface GLRenderer : Renderer {
      * 绑定参数
      *
      */
-    fun bindParamters()
+    fun bindParameters()
 
     /**
      *

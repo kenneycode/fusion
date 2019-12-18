@@ -33,9 +33,9 @@ class CropRenderer : SimpleRenderer() {
         cropRect.bottom = bottom
     }
 
-    override fun bindParamters() {
+    override fun bindParameters() {
         setTextureCoordinates(floatArrayOf(cropRect.left, cropRect.bottom, cropRect.left, cropRect.top, cropRect.right, cropRect.top, cropRect.left, cropRect.bottom, cropRect.right, cropRect.top, cropRect.right, cropRect.bottom))
-        super.bindParamters()
+        super.bindParameters()
     }
 
 }

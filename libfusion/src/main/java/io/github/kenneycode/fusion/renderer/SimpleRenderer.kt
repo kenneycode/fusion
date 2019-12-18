@@ -209,7 +209,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      * 绑定参数
      *
      */
-    override fun bindParamters() {
+    override fun bindParameters() {
         checkDefaultParameters()
         glProgram.bindAttribute(attributes)
         glProgram.bindUniform(uniforms)
@@ -342,7 +342,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
     override fun render(): FrameBuffer {
         bindInput()
         bindOutput()
-        bindParamters()
+        bindParameters()
         performRendering()
         unBindInput()
         return outputFrameBuffer!!
