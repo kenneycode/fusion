@@ -7,9 +7,6 @@ import io.github.kenneycode.fusion.common.Constants
 import io.github.kenneycode.fusion.common.Shader
 import io.github.kenneycode.fusion.framebuffer.FrameBuffer
 import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
-import io.github.kenneycode.fusion.parameter.FloatArrayParameter
-import io.github.kenneycode.fusion.parameter.Parameter
-import io.github.kenneycode.fusion.parameter.Texture2DParameter
 import io.github.kenneycode.fusion.program.GLProgram
 import io.github.kenneycode.fusion.program.GLProgramCache
 
@@ -18,7 +15,7 @@ import android.opengl.GLES20.GL_TRIANGLES
 import android.opengl.GLES20.glDisable
 import android.opengl.GLES20.glDrawArrays
 import android.opengl.GLES20.glEnable
-import io.github.kenneycode.fusion.parameter.Mat4Parameter
+import io.github.kenneycode.fusion.parameter.*
 
 /**
  *
@@ -122,7 +119,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      */
     override fun setUniformOESTexture(key: String, value: Int) {
         val parameter = findParameter(uniforms, key)
-        parameter?.updateValue(value) ?: uniforms.add(Texture2DParameter(key, value))
+        parameter?.updateValue(value) ?: uniforms.add(OESTextureParameter(key, value))
     }
 
     /**
