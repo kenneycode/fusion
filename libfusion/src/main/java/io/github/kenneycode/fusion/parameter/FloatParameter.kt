@@ -12,17 +12,16 @@ import android.opengl.GLES20.*
  *
  */
 
-class FloatParameter(key: String, private var value: Float) : Parameter(key) {
+class FloatParameter(key: String, private var value: Float) : UniformParameter(key) {
 
-    override fun bindUniform(program: Int) {
-        if (location < 0) {
-            location = glGetUniformLocation(program, key)
-        }
+    override fun onBind(location: Int) {
         glUniform1f(location, value)
     }
 
-    override fun updateValue(value: Any) {
-        this.value = value as Float
+    override fun update(value: Any) {
+        (value as? Float)?.let {
+            this.value = it
+        }
     }
 
 }

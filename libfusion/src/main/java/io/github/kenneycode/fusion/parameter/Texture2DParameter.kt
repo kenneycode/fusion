@@ -2,7 +2,6 @@ package io.github.kenneycode.fusion.parameter
 
 import android.opengl.GLES20.GL_TEXTURE_2D
 import android.opengl.GLES20.glBindTexture
-import android.opengl.GLES20.glGetUniformLocation
 import android.opengl.GLES20.glUniform1i
 
 /**
@@ -15,14 +14,16 @@ import android.opengl.GLES20.glUniform1i
  *
  */
 
-class Texture2DParameter(key: String, private var value: Int) : Parameter(key) {
+class Texture2DParameter(key: String, private var value: Int) : UniformParameter(key) {
 
-    override fun bindUniform(program: Int) {
-        if (location < 0) {
-            location = glGetUniformLocation(program, key)
-        }
+    override fun onBind(location: Int) {
         glBindTexture(GL_TEXTURE_2D, value)
         glUniform1i(location, 0)
     }
 
+    override fun update(value: Any) {
+        (value as? Int)?.let {
+            this.value = it
+        }
+    }
 }

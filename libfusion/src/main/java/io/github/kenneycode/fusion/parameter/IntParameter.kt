@@ -1,6 +1,5 @@
 package io.github.kenneycode.fusion.parameter
 
-import android.opengl.GLES20.glGetUniformLocation
 import android.opengl.GLES20.glUniform1i
 
 /**
@@ -13,17 +12,16 @@ import android.opengl.GLES20.glUniform1i
  *
  */
 
-class IntParameter(key: String, private var value: Int) : Parameter(key) {
+class IntParameter(key: String, private var value: Int) : UniformParameter(key) {
 
-    override fun bindUniform(program: Int) {
-        if (location < 0) {
-            location = glGetUniformLocation(program, key)
-        }
+    override fun onBind(location: Int) {
         glUniform1i(location, value)
     }
 
-    override fun updateValue(value: Any) {
-        this.value = value as Int
+    override fun update(value: Any) {
+        (value as? Int)?.let {
+            this.value = it
+        }
     }
 
 }

@@ -65,29 +65,15 @@ class GLProgram(val shader: Shader) : Ref() {
 
     /**
      *
-     * 将attribute参数绑定到此GL Program
+     * 将参数绑定到此GL Program
      *
-     * @param attributes 要绑定的attribute参数
-     *
-     */
-    fun bindAttribute(attributes: Set<Parameter>) {
-        glUseProgram(program)
-        attributes.forEach { p ->
-            p.bindAttribute(program)
-        }
-    }
-
-    /**
-     *
-     * 将uniform参数绑定到此GL Program
-     *
-     * @param uniforms 要绑定的uniform参数
+     * @param parameters 要绑定的参数
      *
      */
-    fun bindUniform(uniforms: Set<Parameter>) {
+    fun bindParameters(parameters: Collection<Parameter>) {
         glUseProgram(program)
-        uniforms.forEach { p ->
-            p.bindUniform(program)
+        parameters.forEach { p ->
+            p.bind(program)
         }
     }
 

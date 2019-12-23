@@ -2,6 +2,7 @@ package io.github.kenneycode.fusion.util
 
 import android.graphics.Bitmap
 import android.opengl.GLES11Ext
+import android.opengl.GLES20
 
 import java.nio.ByteBuffer
 
@@ -291,6 +292,14 @@ class GLUtil {
                         farPlane
                 )
             }
+        }
+
+        fun hasAttribute(program: Int, attributeName: String): Boolean {
+            return GLES20.glGetAttribLocation(program, attributeName) >= 0
+        }
+
+        fun hasUniform(program: Int, attributeName: String): Boolean {
+            return GLES20.glGetUniformLocation(program, attributeName) >= 0
         }
 
     }

@@ -1,5 +1,7 @@
 package io.github.kenneycode.fusion.parameter
 
+import io.github.kenneycode.fusion.common.Constants
+
 /**
  *
  * Coded by kenney
@@ -12,25 +14,25 @@ package io.github.kenneycode.fusion.parameter
 
 abstract class Parameter(val key : String) {
 
-    protected var location: Int = -1
+    protected var location: Int = Constants.INVALID_LOCATION
 
     /**
      *
-     * 绑定attribute参数
+     * 绑定参数，外部的调用入口
      *
      * @param program GL Program
      *
      */
-    open fun bindAttribute(program: Int) {}
+    abstract fun bind(program: Int)
 
     /**
      *
-     * 绑定uniform参数
+     * 绑定参数，给子类的回调
      *
-     * @param program GL Program
+     * @param location 参数location
      *
      */
-    open fun bindUniform(program: Int) {}
+    protected abstract fun onBind(location: Int)
 
     /**
      *
@@ -39,7 +41,7 @@ abstract class Parameter(val key : String) {
      * @param value 新值
      *
      */
-    open fun updateValue(value: Any) {}
+    open fun update(value: Any) {}
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -63,6 +65,5 @@ abstract class Parameter(val key : String) {
         result = 31 * result + location
         return result
     }
-
 
 }

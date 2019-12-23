@@ -78,5 +78,7 @@ class Constants {
         val TEXTURE_COORDINATE_PARAM_KEY = "a_textureCoordinate"
         val MVP_MATRIX_PARAM_KEY = "u_mvpMatrix"
 
+        val INVALID_LOCATION = -1
+
     }
 }

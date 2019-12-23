@@ -18,12 +18,9 @@ import android.opengl.GLES20.glVertexAttribPointer
  *
  */
 
-class FloatArrayParameter(key: String, private var value: FloatArray, private val componentCount: Int = 2) : Parameter(key) {
+class FloatArrayParameter(key: String, private var value: FloatArray, private val componentCount: Int = 2) : AttributeParameter(key) {
 
-    override fun bindAttribute(program: Int) {
-        if (location < 0) {
-            location = glGetAttribLocation(program, key)
-        }
+    override fun onBind(location: Int) {
         val vertexBuffer = ByteBuffer.allocateDirect(value.size * java.lang.Float.SIZE / 8)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer()
@@ -35,8 +32,10 @@ class FloatArrayParameter(key: String, private var value: FloatArray, private va
         glEnableVertexAttribArray(location)
     }
 
-    override fun updateValue(value: Any) {
-        this.value = value as FloatArray
+    override fun update(value: Any) {
+        (value as? FloatArray)?.let {
+            this.value = it
+        }
     }
 
 }

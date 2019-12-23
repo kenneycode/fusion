@@ -12,17 +12,16 @@ import android.opengl.GLES30
  *
  */
 
-class Mat4Parameter(key : String, private var value : FloatArray) : Parameter(key) {
+class Mat4Parameter(key : String, private var value : FloatArray) : UniformParameter(key) {
 
-    override fun bindUniform(program: Int) {
-        if (location < 0) {
-            location = GLES30.glGetUniformLocation(program, key)
-        }
+    override fun onBind(location: Int) {
         GLES30.glUniformMatrix4fv(location, 1, false, value, 0)
     }
 
-    override fun updateValue(value: Any) {
-        this.value = value as FloatArray
+    override fun update(value: Any) {
+        (value as? FloatArray)?.let {
+            this.value = it
+        }
     }
 
 }

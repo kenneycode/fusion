@@ -1,7 +1,5 @@
 package io.github.kenneycode.fusion.renderer
 
-import android.opengl.GLES20
-import java.util.HashSet
 
 import io.github.kenneycode.fusion.common.Constants
 import io.github.kenneycode.fusion.common.Shader
@@ -16,6 +14,7 @@ import android.opengl.GLES20.glDisable
 import android.opengl.GLES20.glDrawArrays
 import android.opengl.GLES20.glEnable
 import io.github.kenneycode.fusion.parameter.*
+import io.github.kenneycode.fusion.util.GLUtil
 
 /**
  *
@@ -31,8 +30,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
 
     private val shader = Shader(vertexShader, fragmentShader)
     private lateinit var glProgram: GLProgram
-    private val attributes = HashSet<Parameter>()
-    private val uniforms = HashSet<Parameter>()
+    private val parameters = HashMap<String, Parameter>()
     private var vertexCount = 0
     protected val inputFrameBuffers = mutableListOf<FrameBuffer>()
     protected var outputFrameBuffer: FrameBuffer? = null
@@ -69,8 +67,9 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun setAttributeFloats(key: String, value: FloatArray, componentCount: Int) {
-        val parameter = findParameter(attributes, key)
-        parameter?.updateValue(value)?: attributes.add(FloatArrayParameter(key, value, componentCount))
+        setParameter(key, value) {
+            FloatArrayParameter(key, value, componentCount)
+        }
     }
 
     /**
@@ -105,8 +104,9 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun setUniformTexture2D(key: String, value: Int) {
-        val parameter = findParameter(uniforms, key)
-        parameter?.updateValue(value) ?: uniforms.add(Texture2DParameter(key, value))
+        setParameter(key, value) {
+            Texture2DParameter(key, value)
+        }
     }
 
     /**
@@ -118,8 +118,9 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun setUniformOESTexture(key: String, value: Int) {
-        val parameter = findParameter(uniforms, key)
-        parameter?.updateValue(value) ?: uniforms.add(OESTextureParameter(key, value))
+        setParameter(key, value) {
+            OESTextureParameter(key, value)
+        }
     }
 
     /**
@@ -131,9 +132,9 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun setUniformMat4(key: String, value: FloatArray) {
-        val parameter = findParameter(uniforms, key)
-        parameter?.updateValue(value) ?: uniforms.add(Mat4Parameter(key, value))
-
+        setParameter(key, value) {
+            Mat4Parameter(key, value)
+        }
     }
 
     /**
@@ -145,6 +146,21 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      */
     override fun setMVPMatrix(value: FloatArray) {
         setUniformMat4(Constants.MVP_MATRIX_PARAM_KEY,  value)
+    }
+
+    /**
+     *
+     * 设置参数，如果参数已存在则更新，不存在则创建
+     *
+     * @param key 参数名
+     * @param value 参数值
+     * @param parameterCreator 参数创建器
+     *
+     */
+    private fun setParameter(key: String, value: Any, parameterCreator: () -> Parameter) {
+        parameters[key]?.update(value) ?: let {
+            parameters[key] = parameterCreator()
+        }
     }
 
     /**
@@ -208,8 +224,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      */
     override fun bindParameters() {
         checkDefaultParameters()
-        glProgram.bindAttribute(attributes)
-        glProgram.bindUniform(uniforms)
+        glProgram.bindParameters(parameters.values)
     }
 
     /**
@@ -218,13 +233,13 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     private fun checkDefaultParameters() {
-        if (GLES20.glGetAttribLocation(glProgram.program, Constants.POSITION_PARAM_KEY) >= 0 && findParameter(attributes, Constants.POSITION_PARAM_KEY) == null) {
+        if (GLUtil.hasAttribute(glProgram.program, Constants.POSITION_PARAM_KEY) && !parameters.containsKey(Constants.POSITION_PARAM_KEY)) {
             setPositions(Constants.SIMPLE_VERTEX)
         }
-        if (GLES20.glGetAttribLocation(glProgram.program, Constants.TEXTURE_COORDINATE_PARAM_KEY) >= 0 && findParameter(attributes, Constants.TEXTURE_COORDINATE_PARAM_KEY) == null) {
+        if (GLUtil.hasAttribute(glProgram.program, Constants.TEXTURE_COORDINATE_PARAM_KEY) && !parameters.containsKey(Constants.TEXTURE_COORDINATE_PARAM_KEY)) {
             setTextureCoordinates(Constants.SIMPLE_TEXTURE_COORDINATE)
         }
-        if (GLES20.glGetUniformLocation(glProgram.program, Constants.MVP_MATRIX_PARAM_KEY) >= 0 && findParameter(uniforms, Constants.MVP_MATRIX_PARAM_KEY) == null) {
+        if (GLUtil.hasUniform(glProgram.program, Constants.MVP_MATRIX_PARAM_KEY) && !parameters.containsKey(Constants.MVP_MATRIX_PARAM_KEY)) {
             setMVPMatrix(Constants.IDENTITY_MATRIX)
         }
     }

@@ -13,19 +13,18 @@ import android.opengl.GLES30
  *
  */
 
-class OESTextureParameter(key : String, private var value : Int) : Parameter(key) {
+class OESTextureParameter(key : String, private var value : Int) : UniformParameter(key) {
 
-    override fun bindUniform(program: Int) {
-        if (location < 0) {
-            location = GLES30.glGetUniformLocation(program, key)
-        }
+    override fun onBind(location: Int) {
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
         GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, value)
         GLES30.glUniform1i(location, 0)
     }
 
-    override fun updateValue(value: Any) {
-        this.value = value as Int
+    override fun update(value: Any) {
+        (value as? Int)?.let {
+            this.value = it
+        }
     }
 
 }
