@@ -9,11 +9,12 @@ import androidx.fragment.app.Fragment
 import io.github.kenneycode.fusion.common.DataKeys
 import io.github.kenneycode.fusion.demo.R
 import io.github.kenneycode.fusion.demo.Util
-import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
+import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 
 import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.renderer.DisplayRenderer
 import io.github.kenneycode.fusion.renderer.SimpleRenderer
+import io.github.kenneycode.fusion.texture.TexturePool
 import io.github.kenneycode.fusion.util.GLUtil
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -84,15 +85,15 @@ class SampleMVPMatrix : Fragment() {
                     }
 
                     // 创建图片输入源
-                    val bitmap = Util.decodeBitmapFromAssets("test.png")!!
-                    val imageTexture = GLUtil.createTexture()
-                    GLUtil.bitmap2Texture(imageTexture, bitmap)
-                    renderChain.setInput(FrameBufferCache.obtainFrameBuffer(bitmap.width, bitmap.height).apply {
-                        texture = imageTexture
-                        width = bitmap.width
-                        height = bitmap.height
-                        retain = true
-                    })
+//                    val bitmap = Util.decodeBitmapFromAssets("test.png")!!
+//                    val imageTexture = GLUtil.createTexture()
+//                    GLUtil.bitmap2Texture(imageTexture, bitmap)
+//                    renderChain.setInput(TexturePool.obtainTexture(bitmap.width, bitmap.height).apply {
+//                        texture = imageTexture
+//                        width = bitmap.width
+//                        height = bitmap.height
+//                        retain = true
+//                    })
 
                 }
             })

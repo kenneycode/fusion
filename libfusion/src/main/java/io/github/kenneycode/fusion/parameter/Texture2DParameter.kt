@@ -1,8 +1,9 @@
 package io.github.kenneycode.fusion.parameter
 
-import android.opengl.GLES20.GL_TEXTURE_2D
-import android.opengl.GLES20.glBindTexture
-import android.opengl.GLES20.glUniform1i
+import android.opengl.GLES20.*
+import android.util.Log
+import io.github.kenneycode.fusion.util.GLUtil
+import io.github.kenneycode.fusion.util.Util
 
 /**
  *
@@ -17,6 +18,8 @@ import android.opengl.GLES20.glUniform1i
 class Texture2DParameter(key: String, private var value: Int) : UniformParameter(key) {
 
     override fun onBind(location: Int) {
+        Util.assert(glIsTexture(value))
+        glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, value)
         glUniform1i(location, 0)
     }

@@ -1,8 +1,10 @@
 package io.github.kenneycode.fusion.renderer
 
-import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
+import android.opengl.GLES20
+import android.opengl.GLES20.*
+import io.github.kenneycode.fusion.common.Constants
+import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 
-import android.opengl.GLES20.glViewport
 import io.github.kenneycode.fusion.common.DataKeys
 
 /**
@@ -15,7 +17,7 @@ import io.github.kenneycode.fusion.common.DataKeys
  *
  */
 
-class DisplayRenderer : SimpleRenderer() {
+class DisplayRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fragmentShader: String = Constants.SIMPLE_FRAGMENT_SHADER) : SimpleRenderer(vertexShader, fragmentShader) {
 
     private var displayWidth: Int = 0
     private var displayHeight: Int = 0
@@ -31,9 +33,7 @@ class DisplayRenderer : SimpleRenderer() {
     }
 
     override fun bindOutput() {
-        outputFrameBuffer = (outputFrameBuffer ?: FrameBufferCache.obtainFrameBuffer()).apply {
-            bind()
-        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0)
         glViewport(0, 0, displayWidth, displayHeight)
     }
 

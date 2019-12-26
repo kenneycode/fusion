@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.parameter
 
 import android.opengl.GLES20
+import io.github.kenneycode.fusion.util.Util
 
 /**
  *
@@ -25,6 +26,7 @@ abstract class UniformParameter(key : String) : Parameter(key) {
         if (location < 0) {
             location = GLES20.glGetUniformLocation(program, key)
         }
+        Util.assert(location >= 0)
         onBind(location)
     }
 

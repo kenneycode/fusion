@@ -24,9 +24,7 @@ class SimpleActivity : AppCompatActivity() {
         const val KEY_SAMPLE_INDEX = "KEY_SAMPLE_INDEX"
 
         val samples = listOf(
-            Pair(R.string.sample_0, SampleBasicUsage::class.java),
-            Pair(R.string.sample_1, SampleGLSurfaceViewUsage0::class.java),
-            Pair(R.string.sample_2, SampleMVPMatrix::class.java)
+            Pair(R.string.sample_0, SampleBasicUsage::class.java)
         )
 
     }

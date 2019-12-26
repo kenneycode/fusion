@@ -1,20 +1,20 @@
 package io.github.kenneycode.fusion.renderer
 
 
+import android.opengl.GLES20.*
+import android.util.Log
 import io.github.kenneycode.fusion.common.Constants
 import io.github.kenneycode.fusion.common.Shader
 import io.github.kenneycode.fusion.framebuffer.FrameBuffer
-import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
+import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 import io.github.kenneycode.fusion.program.GLProgram
-import io.github.kenneycode.fusion.program.GLProgramCache
+import io.github.kenneycode.fusion.program.GLProgramPool
 
-import android.opengl.GLES20.GL_BLEND
-import android.opengl.GLES20.GL_TRIANGLES
-import android.opengl.GLES20.glDisable
-import android.opengl.GLES20.glDrawArrays
-import android.opengl.GLES20.glEnable
 import io.github.kenneycode.fusion.parameter.*
+import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.util.GLUtil
+import io.github.kenneycode.fusion.util.Util
+import org.w3c.dom.Text
 
 /**
  *
@@ -32,10 +32,8 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
     private lateinit var glProgram: GLProgram
     private val parameters = HashMap<String, Parameter>()
     private var vertexCount = 0
-    protected val inputFrameBuffers = mutableListOf<FrameBuffer>()
-    protected var outputFrameBuffer: FrameBuffer? = null
-    protected var specifiedOutputWidth: Int = 0
-    protected var specifiedOutputHeight: Int = 0
+    protected val input = mutableListOf<Texture>()
+    private var output: Texture? = null
 
     /**
      *
@@ -43,7 +41,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun init() {
-        glProgram = GLProgramCache.obtainGLProgram(shader).apply {
+        glProgram = GLProgramPool.obtainGLProgram(shader).apply {
             init()
         }
         initParameter()
@@ -189,15 +187,15 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun bindInput() {
-        if (inputFrameBuffers.isNotEmpty()) {
+        if (input.isNotEmpty()) {
             var textureIndex = '0'
             var i = 0
-            while (i < inputFrameBuffers.size) {
+            while (i < input.size) {
                 var textureKey = "u_texture"
                 if (i > 0) {
                     textureKey += textureIndex
                 }
-                setUniformTexture2D(textureKey, inputFrameBuffers[i].texture)
+                setUniformTexture2D(textureKey, input[i].texture)
                 ++i
                 ++textureIndex
             }
@@ -210,10 +208,13 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun bindOutput() {
-        val outputWidth = if (specifiedOutputWidth > 0) specifiedOutputWidth else inputFrameBuffers.first().width
-        val outputHeight = if (specifiedOutputHeight > 0) specifiedOutputHeight else inputFrameBuffers.first().height
-        outputFrameBuffer = FrameBufferCache.obtainFrameBuffer(outputWidth, outputHeight).apply {
-            bind(outputWidth, outputHeight)
+        output?.let { outputTexture ->
+            FrameBufferPool.obtainFrameBuffer().apply {
+                attachTexture(outputTexture)
+                bind()
+                Util.assert(outputTexture.width > 0 && outputTexture.height > 0)
+                glViewport(0, 0, outputTexture.width, outputTexture.height)
+            }
         }
     }
 
@@ -250,6 +251,8 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     private fun performRendering() {
+        glClearColor(0f, 1f, 0f, 1f)
+        glClear(GL_COLOR_BUFFER_BIT)
         glEnable(GL_BLEND)
         glDrawArrays(GL_TRIANGLES, 0, vertexCount)
         glDisable(GL_BLEND)
@@ -261,12 +264,8 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun unBindInput() {
-        inputFrameBuffers.apply {
-            forEach { frameBuffer ->
-                frameBuffer.decreaseRef()
-            }
-            clear()
-        }
+        input.clear()
+        glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE)
     }
 
     /**
@@ -286,78 +285,62 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      * 设置单个输入
      *
-     * @param frameBuffer 输入FrameBuffer
+     * @param texture 输入texture
      *
      */
-    override fun setInput(frameBuffer: FrameBuffer) {
-        setInput(listOf(frameBuffer))
+    override fun setInput(texture: Texture) {
+        setInput(listOf(texture))
     }
 
     /**
      *
      * 设置多个输入
      *
-     * @param frameBuffers 输入FrameBuffer list
+     * @param textures 输入texture list
      *
      */
-    override fun setInput(frameBuffers: List<FrameBuffer>) {
-        this.inputFrameBuffers.addAll(frameBuffers)
+    override fun setInput(textures: List<Texture>) {
+        input.addAll(textures)
+    }
+
+    /**
+     *
+     * 获取输出
+     *
+     * @return 输出texture
+     *
+     */
+    override fun getOutput(): Texture? {
+        Log.e("debug", "output texture = ${output?.texture}")
+        return output
     }
 
     /**
      *
      * 设置输出
      *
-     * @param frameBuffer 输出FrameBuffer
+     * @param texture 输出texture
      *
      */
-    override fun setOutput(frameBuffer: FrameBuffer) {
-        this.outputFrameBuffer = frameBuffer
+    override fun setOutput(texture: Texture?) {
+        output = texture
     }
 
-    /**
-     *
-     * 设置输出宽高
-     *
-     * @param width 宽度
-     * @param height 高度
-     *
-     */
-    override fun setOutputSize(width: Int, height: Int) {
-        this.specifiedOutputWidth = width
-        this.specifiedOutputHeight = height
-    }
-
-    /**
-     *
-     * 查找参数
-     *
-     * @param parameters 参数集合
-     * @param key 参数名
-     *
-     * @return 对应的参数Paramter类，若找不到返回null
-     *
-     */
-    private fun findParameter(parameters: Set<Parameter>, key: String): Parameter? {
-        return parameters.find {
-            it.key == key
-        }
-    }
 
     /**
      *
      * 渲染
      *
-     * @return 渲染结果FrameBuffer
      *
      */
-    override fun render(): FrameBuffer {
+    override fun render() {
         bindInput()
         bindOutput()
+        GLUtil.checkGLError()
         bindParameters()
         performRendering()
         unBindInput()
-        return outputFrameBuffer!!
+        GLUtil.checkGLError()
     }
 
     /**

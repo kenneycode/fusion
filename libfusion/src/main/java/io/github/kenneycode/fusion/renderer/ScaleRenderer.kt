@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.renderer
 
-import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
+import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
+import io.github.kenneycode.fusion.texture.TexturePool
 
 /**
  *
@@ -18,10 +19,20 @@ class ScaleRenderer : SimpleRenderer() {
     var scale = 1.0f
 
     override fun bindOutput() {
-        val outputWidth = (scale * (specifiedOutputWidth.takeIf { it > 0 } ?: inputFrameBuffers.first().width)).toInt()
-        val outputHeight = (scale * (specifiedOutputHeight.takeIf { it > 0 } ?: inputFrameBuffers.first().height)).toInt()
-        outputFrameBuffer = FrameBufferCache.obtainFrameBuffer(outputWidth, outputHeight).apply {
-            bind(outputWidth, outputHeight)
+        val outputWidth = (scale * input.first().width).toInt()
+        val outputHeight = (scale * input.first().height).toInt()
+        getOutput()?.let { output ->
+            val frameBuffer = FrameBufferPool.obtainFrameBuffer()
+            if (output.width != outputWidth || output.height != outputHeight) {
+                output.decreaseRef()
+                val texture = TexturePool.obtainTexture(outputWidth, outputHeight).apply {
+                    setOutput(this)
+                }
+                frameBuffer.attachTexture(texture)
+            } else {
+                frameBuffer.attachTexture(output)
+            }
+            frameBuffer.bind()
         }
     }
 

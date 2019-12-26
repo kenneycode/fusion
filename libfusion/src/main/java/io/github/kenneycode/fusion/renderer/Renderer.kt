@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.renderer
 
 import io.github.kenneycode.fusion.framebuffer.FrameBuffer
+import io.github.kenneycode.fusion.texture.Texture
 
 /**
  *
@@ -36,47 +37,44 @@ interface Renderer {
      *
      * 设置单个输入
      *
-     * @param frameBuffer 输入FrameBuffer
+     * @param texture 输入texture
      *
      */
-    fun setInput(frameBuffer: FrameBuffer)
+    fun setInput(texture: Texture)
 
     /**
      *
      * 设置多个输入
      *
-     * @param frameBuffers 输入FrameBuffer list
+     * @param textures texture list
      *
      */
-    fun setInput(frameBuffers: List<FrameBuffer>)
+    fun setInput(textures: List<Texture>)
 
     /**
      *
      * 设置输出
      *
-     * @param frameBuffer 输出FrameBuffer
+     * @param texture texture
      *
      */
-    fun setOutput(frameBuffer: FrameBuffer)
+    fun setOutput(texture: Texture?)
 
     /**
      *
-     * 设置输出宽高
+     * 获取输出
      *
-     * @param width 宽度
-     * @param height 高度
+     * @return 输出texture
      *
      */
-    fun setOutputSize(width: Int, height: Int)
+    fun getOutput(): Texture?
 
     /**
      *
      * 渲染
      *
-     * @return 渲染结果FrameBuffer
-     *
      */
-    fun render(): FrameBuffer
+    fun render()
 
     /**
      *

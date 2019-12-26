@@ -5,7 +5,6 @@ import java.nio.ByteOrder
 
 import android.opengl.GLES20.GL_FLOAT
 import android.opengl.GLES20.glEnableVertexAttribArray
-import android.opengl.GLES20.glGetAttribLocation
 import android.opengl.GLES20.glVertexAttribPointer
 
 /**

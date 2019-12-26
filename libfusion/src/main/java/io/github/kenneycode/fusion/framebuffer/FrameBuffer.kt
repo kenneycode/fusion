@@ -1,18 +1,12 @@
 package io.github.kenneycode.fusion.framebuffer
 
-import io.github.kenneycode.fusion.util.GLUtil
+import android.opengl.GLES11Ext
+import android.opengl.GLES20.*
 import io.github.kenneycode.fusion.common.Ref
 
-import android.opengl.GLES20.GL_COLOR_ATTACHMENT0
-import android.opengl.GLES20.GL_FRAMEBUFFER
-import android.opengl.GLES20.GL_RGBA
-import android.opengl.GLES20.GL_TEXTURE_2D
-import android.opengl.GLES20.GL_UNSIGNED_BYTE
-import android.opengl.GLES20.glBindFramebuffer
-import android.opengl.GLES20.glBindTexture
-import android.opengl.GLES20.glFramebufferTexture2D
-import android.opengl.GLES20.glTexImage2D
-import android.opengl.GLES20.glViewport
+import io.github.kenneycode.fusion.texture.Texture
+import io.github.kenneycode.fusion.util.GLUtil
+import io.github.kenneycode.fusion.util.Util
 
 /**
  *
@@ -26,80 +20,66 @@ import android.opengl.GLES20.glViewport
 
 class FrameBuffer : Ref() {
 
-    var width = 0
-    var height = 0
-    var texture = 0
-    var frameBuffer = 0
-    var retain = false
-    var hasExternalTexture = false
+    var frameBuffer = GL_NONE
+    var attachedTexture: Texture? = null
 
     /**
      *
-     * 绑定此FrameBuffer，绑定后将渲染到此FrameBuffer上
+     * 将texture attach到此frame buffer上
      *
-     * @param width 宽度
-     * @param height 高度
-     * @param externalTexture 外部纹理，当指定外部纹理时，外部纹理会附着到此FrameBuffer上
+     * @param texture 要attach的texture
      *
      */
-    fun bind(width: Int = 0, height: Int = 0, externalTexture: Int = -1) {
-        if (width != 0 && height != 0) {
-            if (externalTexture == 0) {
-                if (frameBuffer != 0) {
-                    GLUtil.deleteFrameBuffer(frameBuffer)
-                }
-                if (texture != 0) {
-                    GLUtil.deleteTexture(texture)
-                }
-            } else {
-                if (frameBuffer == 0) {
-                    frameBuffer = GLUtil.createFrameBuffer()
-                }
-                if (externalTexture != -1 && externalTexture != texture) {
-                    GLUtil.deleteTexture(texture)
-                    texture = 0
-                }
-                if (width != this.width || height != this.height || texture == 0) {
-                    this.width = width
-                    this.height = height
-                    if (texture == 0) {
-                        if (externalTexture > 0) {
-                            texture = externalTexture
-                        } else {
-                            texture = GLUtil.createTexture()
-                        }
-                        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer)
-                        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                                texture, 0)
-                    }
-                    glBindTexture(GL_TEXTURE_2D, texture)
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null)
-                    glBindTexture(GL_TEXTURE_2D, 0)
-                }
-            }
+    fun attachTexture(texture: Texture) {
+        attachedTexture?.decreaseRef()
+        attachedTexture = texture
+        if (!glIsFramebuffer(frameBuffer)) {
+            frameBuffer = GLUtil.createFrameBuffer()
         }
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer)
-        glViewport(0, 0, width, height)
+        bind()
+        Util.assert(texture.width > 0 && texture.height > 0 && (texture.type == GL_TEXTURE_2D || texture.type == GLES11Ext.GL_TEXTURE_EXTERNAL_OES) && glIsTexture(texture.texture) && frameBuffer > 0)
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.type, texture.texture, 0)
+        GLUtil.checkGLError()
     }
 
     /**
      *
-     * 减少引用计数，当引用计数为0时放回FrameBufferCache
+     * 绑定此frame buffer，绑定后将渲染到此frame buffer上
+     *
+     */
+    fun bind() {
+        Util.assert(frameBuffer > GL_NONE)
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer)
+        Util.assert(glIsFramebuffer(frameBuffer))
+    }
+
+    /**
+     *
+     * 解绑定此frame buffer，绑定后将渲染到此frame buffer上
+     *
+     */
+    fun unbind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE)
+    }
+
+    /**
+     *
+     * 减少引用计数，当引用计数为0时放回frame buffer cache
      *
      */
     override fun decreaseRef() {
-        if (!retain) {
-            super.decreaseRef()
-            if (refCount <= 0) {
-                FrameBufferCache.releaseFrameBuffer(this)
-            }
+        super.decreaseRef()
+        if (refCount <= 0) {
+            FrameBufferPool.releaseFrameBuffer(this)
         }
     }
 
+    /**
+     *
+     * 释放资源
+     *
+     */
     fun release() {
-        if (!hasExternalTexture) {
-            GLUtil.deleteTexture(texture)
-        }
         GLUtil.deleteFrameBuffer(frameBuffer)
     }
 

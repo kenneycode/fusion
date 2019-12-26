@@ -4,6 +4,7 @@ import io.github.kenneycode.fusion.context.GLContext
 import io.github.kenneycode.fusion.framebuffer.FrameBuffer
 import io.github.kenneycode.fusion.outputtarget.OutputTarget
 import io.github.kenneycode.fusion.renderer.Renderer
+import io.github.kenneycode.fusion.texture.Texture
 
 /**
  *
@@ -80,8 +81,8 @@ class RenderChain(rootRenderer: Renderer) : Renderer {
      * @param frameBuffer 输入FrameBuffer
      *
      */
-    override fun setInput(frameBuffer: FrameBuffer) {
-        renderGraph.setInput(frameBuffer)
+    override fun setInput(texture: Texture) {
+        renderGraph.setInput(texture)
     }
 
     /**
@@ -90,8 +91,12 @@ class RenderChain(rootRenderer: Renderer) : Renderer {
      *
      * @param frameBuffers 输入FrameBuffer
      */
-    override fun setInput(frameBuffers: List<FrameBuffer>) {
-        renderGraph.setInput(frameBuffers)
+    override fun setInput(textures: List<Texture>) {
+        renderGraph.setInput(textures)
+    }
+
+    override fun getOutput(): Texture? {
+        return renderGraph.getOutput()
     }
 
     /**
@@ -101,20 +106,8 @@ class RenderChain(rootRenderer: Renderer) : Renderer {
      * @param frameBuffer 输出FrameBuffer
      *
      */
-    override fun setOutput(frameBuffer: FrameBuffer) {
-        renderGraph.setOutput(frameBuffer)
-    }
-
-    /**
-     *
-     * 设置输出尺寸
-     *
-     * @param width 宽度
-     * @param height 高度
-     *
-     */
-    override fun setOutputSize(width: Int, height: Int) {
-        renderGraph.setOutputSize(width, height)
+    override fun setOutput(texture: Texture?) {
+        renderGraph.setOutput(texture)
     }
 
     /**
@@ -123,7 +116,7 @@ class RenderChain(rootRenderer: Renderer) : Renderer {
      *
      * @return 输出FrameBuffer
      */
-    override fun render(): FrameBuffer {
+    override fun render() {
         return renderGraph.render()
     }
 

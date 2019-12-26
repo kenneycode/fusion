@@ -1,6 +1,6 @@
 package io.github.kenneycode.fusion.outputtarget
 
-import io.github.kenneycode.fusion.framebuffer.FrameBuffer
+import io.github.kenneycode.fusion.texture.Texture
 
 /**
  *
@@ -34,9 +34,9 @@ interface OutputTarget {
      *
      * 通知渲染输出目标输入已经准备好了
      *
-     * @param frameBuffers 输入FrameBuffer
+     * @param textures 输入textures
      *
      */
-    fun onInputReady(frameBuffers: List<FrameBuffer>)
+    fun onInputReady(textures: List<Texture>)
 
 }

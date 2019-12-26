@@ -16,7 +16,7 @@ import io.github.kenneycode.fusion.common.DataKeys
 class OES2RGBARenderer : SimpleRenderer(Constants.OES_VERTEX_SHADER, Constants.OES_FRAGMENT_SHADER) {
 
     override fun bindInput() {
-        setUniformOESTexture("u_texture", inputFrameBuffers.first().texture)
+        setUniformOESTexture("u_texture", input.first().texture)
     }
 
     override fun update(data: MutableMap<String, Any>): Boolean {

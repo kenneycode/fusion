@@ -5,6 +5,7 @@ import io.github.kenneycode.fusion.framebuffer.FrameBuffer
 import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderGraph
 import io.github.kenneycode.fusion.renderer.Renderer
+import io.github.kenneycode.fusion.texture.Texture
 
 /**
  *
@@ -60,8 +61,8 @@ abstract class InputSource {
      * @param data 传入的数据
      * @param frameBuffer 输入FrameBuffer
      */
-    fun notifyInputReady(data: MutableMap<String, Any>, frameBuffer: FrameBuffer) {
-        notifyInputReady(data, listOf(frameBuffer))
+    fun notifyInputReady(data: MutableMap<String, Any>, texture: Texture) {
+        notifyInputReady(data, listOf(texture))
     }
 
     /**
@@ -71,9 +72,9 @@ abstract class InputSource {
      * @param data 传入的数据
      * @param frameBuffers 输入FrameBuffer数组
      */
-    fun notifyInputReady(data: MutableMap<String, Any>, frameBuffers: List<FrameBuffer>) {
+    fun notifyInputReady(data: MutableMap<String, Any>, textures: List<Texture>) {
         renderers.forEach { target ->
-            target.setInput(frameBuffers)
+            target.setInput(textures)
             target.update(data)
             target.render()
         }

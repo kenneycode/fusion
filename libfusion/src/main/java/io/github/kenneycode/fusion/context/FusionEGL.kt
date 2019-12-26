@@ -51,7 +51,7 @@ class FusionEGL {
         )
         eglContext = EGL14.eglCreateContext(
             eglDisplay, eglConfig[0], shareContext,
-            intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 3, EGL14.EGL_NONE), 0
+            intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE), 0
         )
         val surfaceAttribs = intArrayOf(EGL14.EGL_NONE)
         eglSurface = if (surface == null) {

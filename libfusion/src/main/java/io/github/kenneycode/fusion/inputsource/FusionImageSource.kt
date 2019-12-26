@@ -1,10 +1,11 @@
 package io.github.kenneycode.fusion.inputsource
 
 import android.graphics.Bitmap
+import android.opengl.GLES20.GL_TEXTURE_2D
 
 import io.github.kenneycode.fusion.context.GLContextPool
-import io.github.kenneycode.fusion.framebuffer.FrameBufferCache
-import io.github.kenneycode.fusion.util.GLUtil
+import io.github.kenneycode.fusion.texture.TexturePool
+import java.nio.ByteBuffer
 
 /**
  *
@@ -28,15 +29,15 @@ class FusionImageSource(private val image: Bitmap) : InputSource() {
     fun process(data: MutableMap<String, Any> = mutableMapOf()) {
         GLContextPool.obtainGLContext(this)?.let { glContext ->
             glContext.runOnGLContext {
-                val imageTexture = GLUtil.createTexture()
-                GLUtil.bitmap2Texture(imageTexture, image)
-                val frameBuffer = FrameBufferCache.obtainFrameBuffer(image.width, image.height).apply {
-                    width = image.width
-                    height = image.height
-                    texture = imageTexture
+                val buffer = ByteBuffer.allocate(image.width * image.height * 4)
+                image.copyPixelsToBuffer(buffer)
+                buffer.position(0)
+                val texture = TexturePool.obtainTexture(image.width, image.height).apply {
+                    retain = true
+                    setData(buffer)
                 }
                 notifyInit()
-                notifyInputReady(data, frameBuffer)
+                notifyInputReady(data, texture)
             }
         }
     }

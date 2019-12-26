@@ -12,7 +12,7 @@ import io.github.kenneycode.fusion.common.Shader
  *
  */
 
-object GLProgramCache {
+object GLProgramPool {
 
     private val cache = mutableMapOf<Shader, GLProgram>()
 

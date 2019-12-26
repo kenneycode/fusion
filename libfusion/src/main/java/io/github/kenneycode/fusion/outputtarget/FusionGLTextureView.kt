@@ -2,16 +2,22 @@ package io.github.kenneycode.fusion.outputtarget
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.opengl.GLES20
+import android.opengl.GLES20.*
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
+import android.widget.ImageView
+import io.github.kenneycode.fusion.common.Constants
+import io.github.kenneycode.fusion.common.Constants.Companion.SIMPLE_FRAGMENT_SHADER
 
 import java.util.LinkedList
 
 import io.github.kenneycode.fusion.common.FusionGLView
 import io.github.kenneycode.fusion.context.FusionGLThread
-import io.github.kenneycode.fusion.framebuffer.FrameBuffer
 import io.github.kenneycode.fusion.renderer.DisplayRenderer
+import io.github.kenneycode.fusion.texture.Texture
+import io.github.kenneycode.fusion.util.GLUtil
 
 /**
  *
@@ -26,7 +32,7 @@ import io.github.kenneycode.fusion.renderer.DisplayRenderer
 class FusionGLTextureView : TextureView, FusionGLView {
 
     private var glThread: FusionGLThread? = null
-    private var displayRenderer = DisplayRenderer()
+    private var displayRenderer = DisplayRenderer(Constants.SIMPLE_VERTEX_SHADER, SIMPLE_FRAGMENT_SHADER)
     private val pendingTasks = LinkedList<() -> Unit>()
     private var surfaceWidth = 0
     private var surfaceHeight = 0
@@ -90,14 +96,15 @@ class FusionGLTextureView : TextureView, FusionGLView {
      *
      * 通知渲染输出目标输入已经准备好了
      *
-     * @param frameBuffers 输入FrameBuffer
+     * @param textures 输入textures
      *
      */
-    override fun onInputReady(frameBuffers: List<FrameBuffer>) {
+    override fun onInputReady(textures: List<Texture>) {
         displayRenderer.setDisplaySize(surfaceWidth, surfaceHeight)
-        displayRenderer.setInput(frameBuffers)
+        displayRenderer.setInput(textures)
         displayRenderer.render()
         glThread?.swapBuffers()
+        GLUtil.checkGLError()
     }
 
     /**

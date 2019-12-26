@@ -85,7 +85,7 @@ class GLProgram(val shader: Shader) : Ref() {
     override fun decreaseRef() {
         super.decreaseRef()
         if (refCount == 0) {
-            GLProgramCache.releaseGLProgram(this)
+            GLProgramPool.releaseGLProgram(this)
         }
     }
 

@@ -2,9 +2,10 @@ package io.github.kenneycode.fusion.process
 
 import io.github.kenneycode.fusion.common.FusionGLView
 import io.github.kenneycode.fusion.context.GLContext
-import io.github.kenneycode.fusion.framebuffer.FrameBuffer
 import io.github.kenneycode.fusion.outputtarget.OutputTarget
 import io.github.kenneycode.fusion.renderer.Renderer
+import io.github.kenneycode.fusion.texture.Texture
+import io.github.kenneycode.fusion.texture.TexturePool
 import java.util.*
 
 /**
@@ -21,10 +22,8 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
 
     var outputTargetGLContext: GLContext? = null
     private val LAYER_SEPERATOR = null
-    private lateinit var inputFrameBuffers: List<FrameBuffer>
-    private var outputFrameBuffer: FrameBuffer? = null
-    private var outputWidth = 0
-    private var outputHeight = 0
+    private var input = mutableListOf<Texture>()
+    private var output: Texture? = null
     private val rendererNodeMap = HashMap<Renderer, Node>()
     private val rootNode: RendererNode = RendererNode(rootRenderer).apply {
         rendererNodeMap[rootRenderer] = this
@@ -136,8 +135,8 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
      * @param frameBuffer 输入FrameBuffer
      *
      */
-    override fun setInput(frameBuffer: FrameBuffer) {
-        setInput(listOf(frameBuffer))
+    override fun setInput(texture: Texture) {
+        setInput(listOf(texture))
     }
 
     /**
@@ -146,8 +145,15 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
      *
      * @param frameBuffers 输入FrameBuffer
      */
-    override fun setInput(frameBuffers: List<FrameBuffer>) {
-        inputFrameBuffers = frameBuffers
+    override fun setInput(textures: List<Texture>) {
+        input.apply {
+            clear()
+            addAll(textures)
+        }
+    }
+
+    override fun getOutput(): Texture? {
+        return output
     }
 
     /**
@@ -157,21 +163,8 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
      * @param frameBuffer 输出FrameBuffer
      *
      */
-    override fun setOutput(frameBuffer: FrameBuffer) {
-        outputFrameBuffer = frameBuffer
-    }
-
-    /**
-     *
-     * 设置输出尺寸
-     *
-     * @param width 宽度
-     * @param height 高度
-     *
-     */
-    override fun setOutputSize(width: Int, height: Int) {
-        outputWidth = width
-        outputHeight = height
+    override fun setOutput(texture: Texture?) {
+        output = texture
     }
 
     /**
@@ -180,19 +173,12 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
      *
      * @return 输出FrameBuffer
      */
-    override fun render(): FrameBuffer {
-        return performTraversal(inputFrameBuffers)
+    override fun render() {
+        output = performTraversal(input)
     }
 
-    /**
-     *
-     * 执行Graph遍历，执行渲染过程
-     *
-     * @return 输出FrameBuffer
-     *
-     */
-    private fun performTraversal(input: List<FrameBuffer>): FrameBuffer {
-        lateinit var output: FrameBuffer
+    private fun performTraversal(input: List<Texture>): Texture? {
+        var intermediateOutput: Texture? = null
         (rootNode.input).addAll(input)
         val traversalQueue = LinkedList<Node?>()
         traversalQueue.addLast(rootNode)
@@ -209,32 +195,34 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
             }
             when (node) {
                 is RendererNode -> {
-                    output = if (node.needRender) {
-                        node.renderer.setInput(node.input)
-                        if (node.nextNodes.isEmpty() && outputFrameBuffer != null && outputWidth > 0 && outputHeight > 0) {
-                            node.renderer.setOutput(outputFrameBuffer!!)
-                            node.renderer.setOutputSize(outputWidth, outputHeight)
+                    node.renderer.setInput(node.input)
+                    node.renderer.setOutput(
+                        if (node.nextNodes.isEmpty()) {
+                            output
+                        } else {
+                            TexturePool.obtainTexture(node.input.first().width, node.input.first().height)
                         }
-                        node.renderer.render()
-                    } else {
-                        node.input[0]
-                    }
+                    )
+                    node.renderer.render()
+                    intermediateOutput = node.renderer.getOutput()
                 }
                 is OutputTargetNode -> {
                     node.outputTarget.onInputReady(node.input)
                 }
             }
             node.input.clear()
-            if (node.nextNodes.isNotEmpty()) {
-                output.increaseRef(node.nextNodes.size - 1)
-            }
-            node.nextNodes.forEach { nextNode ->
-                nextNode.input.add(output)
-                traversalQueue.addLast(nextNode)
+            intermediateOutput?.let {
+                if (node.nextNodes.isNotEmpty()) {
+                    it.increaseRef(node.nextNodes.size - 1)
+                }
+                node.nextNodes.forEach { nextNode ->
+                    nextNode.input.add(it)
+                    traversalQueue.addLast(nextNode)
+                }
             }
             traversalQueue.addLast(LAYER_SEPERATOR)
         }
-        return output
+        return intermediateOutput
     }
 
     /**
@@ -262,7 +250,7 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
     private open inner class Node(var layer: Int = 0) {
 
         var needRender = true
-        var input = mutableListOf<FrameBuffer>()
+        var input = mutableListOf<Texture>()
         var nextNodes= mutableListOf<Node>()
 
         fun addNext(nextNode: Node) {
