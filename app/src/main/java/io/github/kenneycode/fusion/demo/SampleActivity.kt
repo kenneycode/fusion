@@ -25,7 +25,8 @@ class SimpleActivity : AppCompatActivity() {
 
         val samples = listOf(
             Pair(R.string.sample_0, SampleBasicUsage::class.java),
-            Pair(R.string.sample_1, SampleGLSurfaceViewUsage0::class.java)
+            Pair(R.string.sample_1, SampleGLSurfaceViewUsage0::class.java),
+            Pair(R.string.sample_2, SampleMVPMatrix::class.java)
         )
 
     }
