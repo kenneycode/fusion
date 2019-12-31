@@ -84,8 +84,6 @@ class SampleGLSurfaceViewUsage0 : Fragment() {
 
                     // 创建图片输入源
                     val bitmap = Util.decodeBitmapFromAssets("test.png")!!
-                    val imageTexture = GLUtil.createTexture()
-                    GLUtil.bitmap2Texture(imageTexture, bitmap)
                     val buffer = ByteBuffer.allocate(bitmap.width * bitmap.height * 4)
                     bitmap.copyPixelsToBuffer(buffer)
                     buffer.position(0)
@@ -93,15 +91,6 @@ class SampleGLSurfaceViewUsage0 : Fragment() {
                         retain = true
                         setData(buffer)
                     })
-
-//                    val bitmap = Util.decodeBitmapFromAssets("test.png")!!
-//                    val imageTexture = GLUtil.createTexture()
-//                    GLUtil.bitmap2Texture(imageTexture, bitmap)
-//                    val texture = Texture(bitmap.width, bitmap.height).apply {
-//                        retain = true
-//                        texture = imageTexture
-//                    }
-//                    renderGraph.setInput(texture)
 
                 }
 
