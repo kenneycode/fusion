@@ -88,8 +88,16 @@ class FusionGLTextureView : TextureView, FusionGLView {
      * @param data 传入的数据
      *
      */
-    override fun onUpdate(data: Map<String, Any>) {
+    override fun onUpdate(data: MutableMap<String, Any>) {
 
+    }
+
+    override fun onReceiveOutputTexture(texture: Texture) {
+        displayRenderer.setDisplaySize(surfaceWidth, surfaceHeight)
+        displayRenderer.setInput(texture)
+        displayRenderer.render()
+        glThread?.swapBuffers()
+        GLUtil.checkGLError()
     }
 
     /**
@@ -99,13 +107,6 @@ class FusionGLTextureView : TextureView, FusionGLView {
      * @param textures 输入textures
      *
      */
-    override fun onInputReady(textures: List<Texture>) {
-        displayRenderer.setDisplaySize(surfaceWidth, surfaceHeight)
-        displayRenderer.setInput(textures)
-        displayRenderer.render()
-        glThread?.swapBuffers()
-        GLUtil.checkGLError()
-    }
 
     /**
      *
@@ -128,7 +129,7 @@ class FusionGLTextureView : TextureView, FusionGLView {
 
     /**
      *
-     * detached from window回调，此时销毁资源
+     * detached input window回调，此时销毁资源
      *
      */
     public override fun onDetachedFromWindow() {

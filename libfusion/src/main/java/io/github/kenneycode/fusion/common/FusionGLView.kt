@@ -2,6 +2,7 @@ package io.github.kenneycode.fusion.common
 
 import io.github.kenneycode.fusion.context.GLContext
 import io.github.kenneycode.fusion.outputtarget.OutputTarget
+import io.github.kenneycode.fusion.process.RenderPipeline
 
 /**
  *
@@ -13,4 +14,4 @@ import io.github.kenneycode.fusion.outputtarget.OutputTarget
  *
  */
 
-interface FusionGLView : OutputTarget, GLContext
+interface FusionGLView : RenderPipeline.Output, GLContext
