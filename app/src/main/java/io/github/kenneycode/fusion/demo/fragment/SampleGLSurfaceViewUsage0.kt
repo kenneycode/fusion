@@ -10,13 +10,10 @@ import androidx.fragment.app.Fragment
 import io.github.kenneycode.fusion.common.DataKeys
 import io.github.kenneycode.fusion.demo.R
 import io.github.kenneycode.fusion.demo.Util
-import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 import io.github.kenneycode.fusion.process.RenderGraph
 import io.github.kenneycode.fusion.renderer.DisplayRenderer
 import io.github.kenneycode.fusion.renderer.SimpleRenderer
-import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.texture.TexturePool
-import io.github.kenneycode.fusion.util.GLUtil
 import java.nio.ByteBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -77,10 +74,11 @@ class SampleGLSurfaceViewUsage0 : Fragment() {
                     }
 
                     // 创建RenderGraph
-                    renderGraph = RenderGraph(simpleRenderer).apply {
-                        addNextRenderer(simpleRenderer, displayRenderer)
-                        init()
-                    }
+                    renderGraph = RenderGraph.create()
+                            .setRootRenderer(simpleRenderer)
+                            .connectRenderer(simpleRenderer, displayRenderer).apply {
+                                init()
+                            }
 
                     // 创建图片输入源
                     val bitmap = Util.decodeBitmapFromAssets("test.png")!!

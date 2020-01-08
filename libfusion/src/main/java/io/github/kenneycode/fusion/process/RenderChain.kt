@@ -1,7 +1,6 @@
 package io.github.kenneycode.fusion.process
 
 import io.github.kenneycode.fusion.context.GLContext
-import io.github.kenneycode.fusion.framebuffer.FrameBuffer
 import io.github.kenneycode.fusion.outputtarget.OutputTarget
 import io.github.kenneycode.fusion.renderer.Renderer
 import io.github.kenneycode.fusion.texture.Texture
@@ -16,15 +15,23 @@ import io.github.kenneycode.fusion.texture.Texture
  *
  */
 
-class RenderChain(rootRenderer: Renderer) : Renderer {
+class RenderChain private constructor(): Renderer {
 
-    private val renderGraph = RenderGraph(rootRenderer)
-    private var tailRenderer = rootRenderer
+    private val renderGraph = RenderGraph.create()
+    private var tailRenderer: Renderer? = null
     var outputTargetGLContext: GLContext?
         get() = renderGraph.outputTargetGLContext
         set(value) {
             renderGraph.outputTargetGLContext = value
         }
+
+    companion object {
+
+        fun create(): RenderChain {
+            return RenderChain()
+        }
+
+    }
 
     /**
      *
@@ -57,8 +64,14 @@ class RenderChain(rootRenderer: Renderer) : Renderer {
      * @return 返回此RenderChain
      *
      */
-    fun addNextRenderer(next: Renderer): RenderChain {
-        renderGraph.addNextRenderer(tailRenderer, next)
+    fun addRenderer(next: Renderer): RenderChain {
+        tailRenderer.let {
+            if (it == null) {
+                renderGraph.setRootRenderer(next)
+            } else {
+                renderGraph.connectRenderer(it, next)
+            }
+        }
         tailRenderer = next
         return this
     }
@@ -71,7 +84,7 @@ class RenderChain(rootRenderer: Renderer) : Renderer {
      *
      */
     fun setOutputTarget(next: OutputTarget) {
-        renderGraph.addOutputTarget(tailRenderer, next)
+        renderGraph.addOutputTarget(tailRenderer!!, next)
     }
 
     /**

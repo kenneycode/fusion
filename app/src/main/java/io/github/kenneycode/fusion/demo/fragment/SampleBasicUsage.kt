@@ -48,9 +48,9 @@ class SampleBasicUsage : Fragment() {
         }
 
         // 创建RenderChain
-        val renderChain = RenderChain(scaleRenderer).apply {
-            addNextRenderer(cropRenderer)
-        }
+        val renderChain = RenderChain.create()
+                .addRenderer(scaleRenderer)
+                .addRenderer(cropRenderer)
 
         RenderPipeline
                 .input(image)

@@ -18,15 +18,62 @@ import java.util.*
  *
  */
 
-class RenderGraph(private val rootRenderer: Renderer) : Renderer {
+class RenderGraph private constructor() : Renderer {
 
     var outputTargetGLContext: GLContext? = null
     private val LAYER_SEPERATOR = null
     private var input = mutableListOf<Texture>()
     private var output: Texture? = null
     private val rendererNodeMap = HashMap<Renderer, Node>()
-    private val rootNode: RendererNode = RendererNode(rootRenderer).apply {
-        rendererNodeMap[rootRenderer] = this
+    private lateinit var rootNode: RendererNode
+
+    companion object {
+
+        fun create(): RenderGraph {
+            return RenderGraph()
+        }
+
+    }
+
+    /**
+     *
+     * 设置根renderer
+     *
+     * @param renderer  根Renderer
+     *
+     * @return 返回此RenderGraph
+     *
+     */
+    fun setRootRenderer(renderer: Renderer): RenderGraph {
+        rootNode = RendererNode(renderer)
+        rendererNodeMap[renderer] = rootNode
+        return this
+    }
+
+    /**
+     *
+     * 为一个Renderer连接一个后续Renderer
+     *
+     * @param pre   前一个Renderer
+     * @param next  后一个Renderer
+     *
+     * @return 返回此RenderGraph
+     *
+     */
+    fun connectRenderer(pre: Renderer, next: Renderer): RenderGraph {
+        val preNode = rendererNodeMap[pre]!!
+        if (!rendererNodeMap.containsKey(next)) {
+            rendererNodeMap[next] = RendererNode(next, preNode.layer + 1)
+        }
+        rendererNodeMap[next]?.let { nextNode ->
+            preNode.addNext(nextNode)
+            nextNode.layer = if (preNode.layer + 1 > nextNode.layer) {
+                preNode.layer + 1
+            } else {
+                nextNode.layer
+            }
+        }
+        return this
     }
 
     /**
@@ -76,32 +123,6 @@ class RenderGraph(private val rootRenderer: Renderer) : Renderer {
             traversalQueue.addAll(node.nextNodes)
         }
         return true
-    }
-
-    /**
-     *
-     * 为一个Renderer添加一个后续Renderer
-     *
-     * @param pre   前一个Renderer
-     * @param next  后一个Renderer
-     *
-     * @return 返回此RenderGraph
-     *
-     */
-    fun addNextRenderer(pre: Renderer, next: Renderer): RenderGraph {
-        val preNode = rendererNodeMap[pre]!!
-        if (!rendererNodeMap.containsKey(next)) {
-            rendererNodeMap[next] = RendererNode(next, preNode.layer + 1)
-        }
-        rendererNodeMap[next]?.let { nextNode ->
-            preNode.addNext(nextNode)
-            nextNode.layer = if (preNode.layer + 1 > nextNode.layer) {
-                preNode.layer + 1
-            } else {
-                nextNode.layer
-            }
-        }
-        return this
     }
 
     /**

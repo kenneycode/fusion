@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import io.github.kenneycode.fusion.common.DataKeys
 import io.github.kenneycode.fusion.demo.R
 import io.github.kenneycode.fusion.demo.Util
-import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 
 import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.renderer.DisplayRenderer
@@ -80,10 +79,11 @@ class SampleMVPMatrix : Fragment() {
                     val displayRenderer = DisplayRenderer()
 
                     // 创建RenderChain
-                    renderChain = RenderChain(simpleRenderer).apply {
-                        addNextRenderer(displayRenderer)
-                        init()
-                    }
+                    renderChain = RenderChain.create()
+                            .addRenderer(simpleRenderer)
+                            .addRenderer(displayRenderer).apply {
+                                init()
+                            }
 
                     // 创建图片输入源
                     val bitmap = Util.decodeBitmapFromAssets("test.png")!!
