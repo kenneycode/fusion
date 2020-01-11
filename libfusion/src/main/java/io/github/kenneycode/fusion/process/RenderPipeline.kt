@@ -18,13 +18,17 @@ class RenderPipeline private constructor() {
 
     }
 
-    private lateinit var glContext: GLContext
+    private var glContext: GLContext? = null
     private lateinit var input: Input
     private lateinit var output: Output
     private lateinit var renderer: Renderer
 
-    fun renderWith(renderer: Renderer, glContext: GLContext = SimpleGLContext()): RenderPipeline {
+    fun renderWith(renderer: Renderer): RenderPipeline {
         this.renderer = renderer
+        return this
+    }
+
+    fun useContext(glContext: GLContext): RenderPipeline {
         this.glContext = glContext
         return this
     }
@@ -65,7 +69,10 @@ class RenderPipeline private constructor() {
     }
 
     private fun executeOnGLContext(task: () -> Unit) {
-        glContext.runOnGLContext {
+        if (glContext == null) {
+            glContext = SimpleGLContext()
+        }
+        glContext?.runOnGLContext {
             task()
         }
     }

@@ -1,5 +1,7 @@
 package io.github.kenneycode.fusion.context
 
+import android.view.Surface
+
 /**
  *
  * Coded by kenney
@@ -10,12 +12,12 @@ package io.github.kenneycode.fusion.context
  *
  */
 
-class SimpleGLContext : GLContext {
+class SimpleGLContext(surface: Surface? = null) : GLContext {
 
     private val glThread = FusionGLThread()
 
     init {
-        glThread.init()
+        glThread.init(surface)
     }
 
     /**

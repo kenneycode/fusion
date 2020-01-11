@@ -54,7 +54,8 @@ class SampleBasicUsage : Fragment() {
 
         RenderPipeline
                 .input(image)
-                .renderWith(renderChain, fusionGLTextureView)
+                .renderWith(renderChain)
+                .useContext(fusionGLTextureView)
                 .output(fusionGLTextureView).apply {
                     init()
                     update()

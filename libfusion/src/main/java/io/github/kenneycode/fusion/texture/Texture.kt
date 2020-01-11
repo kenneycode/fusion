@@ -44,7 +44,7 @@ class Texture(val width: Int, val height: Int, val type: Int = GL_TEXTURE_2D) : 
         Util.assert(width > 0 && height > 0 && (type == GL_TEXTURE_2D || type == GL_TEXTURE_EXTERNAL_OES) && glIsTexture(texture))
         glBindTexture(type, texture)
         glTexImage2D(type, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data)
-//        glBindTexture(type, 0)
+        glBindTexture(type, 0)
     }
 
     /**
