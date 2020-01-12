@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import io.github.kenneycode.fusion.demo.R
 import io.github.kenneycode.fusion.demo.Util
 
-import io.github.kenneycode.fusion.inputsource.FusionImageSource
+import io.github.kenneycode.fusion.inputsource.FusionImage
 import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.renderer.CropRenderer
@@ -33,8 +33,8 @@ class SampleBasicUsage : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-
-        val image = FusionImageSource(Util.decodeBitmapFromAssets("test.png")!!)
+        // 创建图片输入
+        val image = FusionImage(Util.decodeBitmapFromAssets("test.png")!!)
 
         // 创建一个scale renderer
         val scaleRenderer = ScaleRenderer().apply {
@@ -47,20 +47,26 @@ class SampleBasicUsage : Fragment() {
             setCropRect(0.1f, 0.9f, 0.8f, 0.2f)
         }
 
-        // 创建RenderChain
+        // 创建RenderChain并添加renderer
         val renderChain = RenderChain.create()
                 .addRenderer(scaleRenderer)
                 .addRenderer(cropRenderer)
 
-        RenderPipeline
+        // 创建RenderPipeline
+        val renderPipeline = RenderPipeline
                 .input(image)
                 .renderWith(renderChain)
                 .useContext(fusionGLTextureView)
-                .output(fusionGLTextureView).apply {
-                    init()
-                    update()
-                    render()
-                }
+                .output(fusionGLTextureView)
+
+        // 初始化
+        renderPipeline.init()
+
+        // 更新（非必需）
+        renderPipeline.update()
+
+        // 渲染
+        renderPipeline.render()
 
     }
 
