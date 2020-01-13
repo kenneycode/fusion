@@ -40,7 +40,7 @@ dependencies {
 // 创建图片输入
 val image = FusionImage(Util.decodeBitmapFromAssets("test.png")!!)
 
-// 创建一个scale renderer
+// 创建一个renderer用于演示
 val scaleRenderer = ScaleRenderer().apply {
     setFlip(false, true)
     scale = 0.8f
@@ -51,7 +51,7 @@ val cropRenderer = CropRenderer().apply {
     setCropRect(0.1f, 0.9f, 0.8f, 0.2f)
 }
 
-// 创建一个renderer用于演示
+// 创建RenderChain并将添加renderer
 val renderChain = RenderChain.create()
     .addRenderer(scaleRenderer)
     .addRenderer(cropRenderer)
