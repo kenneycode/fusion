@@ -1,8 +1,5 @@
 package io.github.kenneycode.fusion.process
 
-import io.github.kenneycode.fusion.common.FusionGLView
-import io.github.kenneycode.fusion.context.GLContext
-import io.github.kenneycode.fusion.outputtarget.OutputTarget
 import io.github.kenneycode.fusion.renderer.Renderer
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.texture.TexturePool
@@ -14,13 +11,12 @@ import java.util.*
  *
  * http://www.github.com/kenneycode/fusion
  *
- * 渲染过程管理类，将Renderer/OutputTarget按指定规则连接成Graph，并执行渲染过程
+ * 渲染过程管理类，将Renderer按指定规则连接成Graph，并执行渲染过程
  *
  */
 
 class RenderGraph private constructor() : Renderer {
 
-    var outputTargetGLContext: GLContext? = null
     private val LAYER_SEPERATOR = null
     private var input = mutableListOf<Texture>()
     private var output: Texture? = null
@@ -90,9 +86,6 @@ class RenderGraph private constructor() : Renderer {
                 is RendererNode -> {
                     node.renderer.init()
                 }
-                is OutputTargetNode -> {
-                    node.outputTarget.onInit()
-                }
             }
             traversalQueue.addAll(node.nextNodes)
         }
@@ -116,37 +109,10 @@ class RenderGraph private constructor() : Renderer {
                 is RendererNode -> {
                     node.needRender = node.renderer.update(data)
                 }
-                is OutputTargetNode -> {
-                    node.outputTarget.onUpdate(data)
-                }
             }
             traversalQueue.addAll(node.nextNodes)
         }
         return true
-    }
-
-    /**
-     *
-     * 为一个Renderer添加一个后续OutputTarget
-     *
-     * @param pre   前一个Renderer
-     * @param next  后一个OutputTarget
-     *
-     */
-    fun addOutputTarget(pre: Renderer, next: OutputTarget) {
-        val preNode = rendererNodeMap[pre]!!
-        val nextNode = OutputTargetNode(next)
-        preNode.addNext(nextNode)
-        nextNode.layer = if (preNode.layer + 1 > nextNode.layer) {
-            preNode.layer + 1
-        } else {
-            nextNode.layer
-        }
-        when (next) {
-            is FusionGLView -> {
-                outputTargetGLContext = next
-            }
-        }
     }
 
     /**
@@ -227,9 +193,6 @@ class RenderGraph private constructor() : Renderer {
                     node.renderer.render()
                     intermediateOutput = node.renderer.getOutput()
                 }
-                is OutputTargetNode -> {
-                    node.outputTarget.onInputReady(node.input)
-                }
             }
             node.input.clear()
             intermediateOutput?.let {
@@ -286,12 +249,5 @@ class RenderGraph private constructor() : Renderer {
      *
      */
     private inner class RendererNode(val renderer: Renderer, layer: Int = 0) : Node(layer)
-
-    /**
-     *
-     * 输出目标Node类
-     *
-     */
-    private inner class OutputTargetNode(val outputTarget: OutputTarget, layer: Int = 0) : Node(layer)
 
 }

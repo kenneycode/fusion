@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.github.kenneycode.fusion.outputtarget.FusionGLTextureView
+    <io.github.kenneycode.fusion.output.FusionGLTextureView
         android:id="@+id/fusionGLTextureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

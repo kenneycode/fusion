@@ -1,13 +1,10 @@
-package io.github.kenneycode.fusion.outputtarget
+package io.github.kenneycode.fusion.output
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
-import android.opengl.GLES20.*
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
-import android.widget.ImageView
 import io.github.kenneycode.fusion.common.Constants
 import io.github.kenneycode.fusion.common.Constants.Companion.SIMPLE_FRAGMENT_SHADER
 

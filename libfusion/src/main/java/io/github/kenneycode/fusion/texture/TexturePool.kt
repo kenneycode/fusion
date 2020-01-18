@@ -1,10 +1,8 @@
 package io.github.kenneycode.fusion.texture
 
 import android.opengl.GLES20.GL_TEXTURE_2D
-import java.util.HashMap
 import io.github.kenneycode.fusion.common.Size
 import io.github.kenneycode.fusion.util.Util
-import org.w3c.dom.Text
 
 /**
  *
@@ -68,6 +66,7 @@ object TexturePool {
                 }
             }
         }
+        cache.clear()
     }
 
 }

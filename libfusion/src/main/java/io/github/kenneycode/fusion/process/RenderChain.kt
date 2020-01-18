@@ -1,7 +1,6 @@
 package io.github.kenneycode.fusion.process
 
 import io.github.kenneycode.fusion.context.GLContext
-import io.github.kenneycode.fusion.outputtarget.OutputTarget
 import io.github.kenneycode.fusion.renderer.Renderer
 import io.github.kenneycode.fusion.texture.Texture
 
@@ -11,7 +10,7 @@ import io.github.kenneycode.fusion.texture.Texture
  *
  * http://www.github.com/kenneycode/fusion
  *
- * 渲染过程管理类，将Renderer/OutputTarget按单链的方式连接，并执行渲染过程
+ * 渲染过程管理类，将Renderer按单链的方式连接，并执行渲染过程
  *
  */
 
@@ -19,11 +18,6 @@ class RenderChain private constructor(): Renderer {
 
     private val renderGraph = RenderGraph.create()
     private var tailRenderer: Renderer? = null
-    var outputTargetGLContext: GLContext?
-        get() = renderGraph.outputTargetGLContext
-        set(value) {
-            renderGraph.outputTargetGLContext = value
-        }
 
     companion object {
 
@@ -74,17 +68,6 @@ class RenderChain private constructor(): Renderer {
         }
         tailRenderer = next
         return this
-    }
-
-    /**
-     *
-     * 为最后一个Renderer添加一个后续OutputTarget
-     *
-     * @param next OutputTarget
-     *
-     */
-    fun setOutputTarget(next: OutputTarget) {
-        renderGraph.addOutputTarget(tailRenderer!!, next)
     }
 
     /**

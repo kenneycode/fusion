@@ -1,9 +1,7 @@
-package io.github.kenneycode.fusion.inputsource
+package io.github.kenneycode.fusion.input
 
 import android.graphics.Bitmap
-import android.opengl.GLES20.GL_TEXTURE_2D
 
-import io.github.kenneycode.fusion.context.GLContextPool
 import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.texture.TexturePool

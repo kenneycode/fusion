@@ -54,6 +54,7 @@ object GLProgramPool {
         cache.values.forEach { glProgram ->
             glProgram.release()
         }
+        cache.clear()
     }
 
 }

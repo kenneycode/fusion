@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import io.github.kenneycode.fusion.common.DataKeys
 import io.github.kenneycode.fusion.demo.R
 import io.github.kenneycode.fusion.demo.Util
+import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 import io.github.kenneycode.fusion.process.RenderGraph
+import io.github.kenneycode.fusion.program.GLProgramPool
 import io.github.kenneycode.fusion.renderer.DisplayRenderer
 import io.github.kenneycode.fusion.renderer.SimpleRenderer
 import io.github.kenneycode.fusion.texture.TexturePool
@@ -97,8 +99,13 @@ class SampleGLSurfaceViewUsage0 : Fragment() {
             renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         }
 
+    }
 
-
+    override fun onDestroy() {
+        TexturePool.release()
+        FrameBufferPool.release()
+        GLProgramPool.release()
+        super.onDestroy()
     }
 
 }

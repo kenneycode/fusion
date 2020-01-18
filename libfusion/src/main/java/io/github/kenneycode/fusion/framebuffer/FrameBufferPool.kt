@@ -43,6 +43,7 @@ object FrameBufferPool {
         cache.forEach {
             it.release()
         }
+        cache.clear()
     }
 
 }

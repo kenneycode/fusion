@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.github.kenneycode.fusion.demo.R
 import io.github.kenneycode.fusion.demo.Util
+import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 
-import io.github.kenneycode.fusion.inputsource.FusionImage
+import io.github.kenneycode.fusion.input.FusionImage
 import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderPipeline
+import io.github.kenneycode.fusion.program.GLProgramPool
 import io.github.kenneycode.fusion.renderer.CropRenderer
 import io.github.kenneycode.fusion.renderer.ScaleRenderer
+import io.github.kenneycode.fusion.texture.TexturePool
 import kotlinx.android.synthetic.main.fragment_sample_fusion_gl_texture_view.*
 
 /**
@@ -68,6 +71,13 @@ class SampleBasicUsage : Fragment() {
         // 渲染
         renderPipeline.render()
 
+    }
+
+    override fun onDestroy() {
+        TexturePool.release()
+        FrameBufferPool.release()
+        GLProgramPool.release()
+        super.onDestroy()
     }
 
 }
