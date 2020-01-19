@@ -17,11 +17,10 @@ import java.util.*
 
 class RenderGraph private constructor() : Renderer {
 
-    private val LAYER_SEPERATOR = null
     private var input = mutableListOf<Texture>()
     private var output: Texture? = null
     private val rendererNodeMap = HashMap<Renderer, Node>()
-    private lateinit var rootNode: RendererNode
+    private lateinit var rootNode: Node
 
     companion object {
 
@@ -41,7 +40,7 @@ class RenderGraph private constructor() : Renderer {
      *
      */
     fun setRootRenderer(renderer: Renderer): RenderGraph {
-        rootNode = RendererNode(renderer)
+        rootNode = Node(renderer)
         rendererNodeMap[renderer] = rootNode
         return this
     }
@@ -59,7 +58,7 @@ class RenderGraph private constructor() : Renderer {
     fun connectRenderer(pre: Renderer, next: Renderer): RenderGraph {
         val preNode = rendererNodeMap[pre]!!
         if (!rendererNodeMap.containsKey(next)) {
-            rendererNodeMap[next] = RendererNode(next, preNode.layer + 1)
+            rendererNodeMap[next] = Node(next, preNode.layer + 1)
         }
         rendererNodeMap[next]?.let { nextNode ->
             preNode.addNext(nextNode)
@@ -78,16 +77,8 @@ class RenderGraph private constructor() : Renderer {
      *
      */
     override fun init() {
-        val traversalQueue = LinkedList<Node>()
-        traversalQueue.addLast(rootNode)
-        while (!traversalQueue.isEmpty()) {
-            val node = traversalQueue.removeFirst()
-            when (node) {
-                is RendererNode -> {
-                    node.renderer.init()
-                }
-            }
-            traversalQueue.addAll(node.nextNodes)
+        layerTraversal(rootNode) { node ->
+            node.renderer.init()
         }
     }
 
@@ -101,16 +92,8 @@ class RenderGraph private constructor() : Renderer {
      *
      */
     override fun update(data: MutableMap<String, Any>): Boolean {
-        val traversalQueue = LinkedList<Node>()
-        traversalQueue.addLast(rootNode)
-        while (!traversalQueue.isEmpty()) {
-            val node = traversalQueue.removeFirst()
-            when (node) {
-                is RendererNode -> {
-                    node.needRender = node.renderer.update(data)
-                }
-            }
-            traversalQueue.addAll(node.nextNodes)
+        layerTraversal(rootNode) { node ->
+            node.renderer.update(data)
         }
         return true
     }
@@ -159,54 +142,82 @@ class RenderGraph private constructor() : Renderer {
      * 执行渲染
      *
      * @return 输出FrameBuffer
+     *
      */
     override fun render() {
-        output = performTraversal(input)
+        output = renderByLayer(input)
     }
 
-    private fun performTraversal(input: List<Texture>): Texture? {
+    /**
+     *
+     * 按层序渲染
+     *
+     * @param input 输入textures
+     *
+     * @return 输出texture
+     *
+     */
+    private fun renderByLayer(input: List<Texture>): Texture? {
         var intermediateOutput: Texture? = null
-        (rootNode.input).addAll(input)
-        val traversalQueue = LinkedList<Node?>()
-        traversalQueue.addLast(rootNode)
-        traversalQueue.addLast(LAYER_SEPERATOR)
-        var currentLayer = 0
-        while (!traversalQueue.isEmpty()) {
-            val node = traversalQueue.removeFirst()
-            if (node == LAYER_SEPERATOR) {
-                ++currentLayer
-                continue
-            }
-            if (node.layer != currentLayer) {
-                continue
-            }
-            when (node) {
-                is RendererNode -> {
-                    node.renderer.setInput(node.input)
-                    node.renderer.setOutput(
-                        if (node.nextNodes.isEmpty()) {
-                            output
-                        } else {
-                            TexturePool.obtainTexture(node.input.first().width, node.input.first().height)
-                        }
-                    )
-                    node.renderer.render()
-                    intermediateOutput = node.renderer.getOutput()
+        rootNode.input.addAll(input)
+        layerTraversal(rootNode) { node ->
+            node.renderer.setInput(node.input)
+            node.renderer.setOutput(
+                if (node.nextNodes.isEmpty()) {
+                    output
+                } else {
+                    TexturePool.obtainTexture(node.input.first().width, node.input.first().height)
                 }
+            )
+            node.renderer.render()
+            intermediateOutput = node.renderer.getOutput()
+            node.input.forEach {
+                it.decreaseRef()
             }
             node.input.clear()
-            intermediateOutput?.let {
+            intermediateOutput?.let { outputTexture ->
                 if (node.nextNodes.isNotEmpty()) {
-                    it.increaseRef(node.nextNodes.size - 1)
-                }
-                node.nextNodes.forEach { nextNode ->
-                    nextNode.input.add(it)
-                    traversalQueue.addLast(nextNode)
+                    outputTexture.increaseRef(node.nextNodes.size - 1)
+                    node.nextNodes.forEach { nextNode ->
+                        nextNode.input.add(outputTexture)
+                    }
                 }
             }
-            traversalQueue.addLast(LAYER_SEPERATOR)
         }
         return intermediateOutput
+    }
+
+    /**
+     *
+     * 层序遍历
+     *
+     * @param rootNode 根node
+     * @param nodeProcessor 节点处理器
+     *
+     */
+    private fun layerTraversal(rootNode: Node, nodeProcessor: (node: Node) -> Unit) {
+        val traversalQueue = LinkedList<Node>()
+        val queuedNodes = mutableSetOf<Node>()
+        val layerNodes = mutableListOf<MutableList<Node>>()
+        traversalQueue.addLast(rootNode)
+        while (!traversalQueue.isEmpty()) {
+            val node = traversalQueue.removeFirst()
+            if (node.layer >= layerNodes.size) {
+                layerNodes.add(mutableListOf())
+            }
+            layerNodes[node.layer].add(node);
+            node.nextNodes.forEach { nextNode ->
+                if (!queuedNodes.contains(nextNode)) {
+                    traversalQueue.addLast(nextNode)
+                    queuedNodes.add(nextNode)
+                }
+            }
+        }
+        layerNodes.forEach { layer ->
+            layer.forEach { node ->
+                nodeProcessor(node)
+            }
+        }
     }
 
     /**
@@ -215,23 +226,17 @@ class RenderGraph private constructor() : Renderer {
      *
      */
     override fun release() {
-        val traversalQueue = LinkedList<Node>()
-        traversalQueue.addLast(rootNode)
-        while (!traversalQueue.isEmpty()) {
-            val node = traversalQueue.removeFirst()
-            if (node is RendererNode) {
-                node.renderer.release()
-            }
-            traversalQueue.addAll(node.nextNodes)
+        layerTraversal(rootNode) { node ->
+            node.renderer.release()
         }
     }
 
     /**
      *
-     * Graph Node基类
+     * Graph Node
      *
      */
-    private open inner class Node(var layer: Int = 0) {
+    private open inner class Node(val renderer: Renderer, var layer: Int = 0) {
 
         var needRender = true
         var input = mutableListOf<Texture>()
@@ -242,12 +247,5 @@ class RenderGraph private constructor() : Renderer {
         }
 
     }
-
-    /**
-     *
-     * 渲染器Node类
-     *
-     */
-    private inner class RendererNode(val renderer: Renderer, layer: Int = 0) : Node(layer)
 
 }
