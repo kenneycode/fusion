@@ -30,47 +30,36 @@ allprojects {
 
 ```
 dependencies {
-	implementation 'com.github.kenneycode:fusion:1.0.4'
+	implementation 'com.github.kenneycode:fusion:1.0.5'
 }
 ```
 
 ## 基本用法
 
-```java
-// 创建图片输入
-val image = FusionImage(Util.decodeBitmapFromAssets("test.png")!!)
-
-// 创建一个renderer用于演示
+```kotlin
+// 创建一个scale renderer
 val scaleRenderer = ScaleRenderer().apply {
     setFlip(false, true)
-    scale = 0.8f
+        setScale(0.8f)
 }
 
-// 创建一个renderer用于演示
+// 创建一个crop renderer
 val cropRenderer = CropRenderer().apply {
     setCropRect(0.1f, 0.9f, 0.8f, 0.2f)
 }
 
-// 创建RenderChain并将添加renderer
-val renderChain = RenderChain.create()
+// 创建RenderChain并添加renderer
+val renderer = RenderChain.create()
     .addRenderer(scaleRenderer)
     .addRenderer(cropRenderer)
 
-// 创建RenderPipeline将RenderChain与输入/输出连接
 val renderPipeline = RenderPipeline
-    .input(image)
-    .renderWith(renderChain)
-    .useContext(fusionGLTextureView)
-    .output(fusionGLTextureView)
+	.input(FusionImage(Util.decodeBitmapFromAssets("test.png")!!))
+    .renderWith(renderer)
+    .useContext(fusionView)
+    .output(fusionView)
 
-// 初始化
-renderPipeline.init()
-
-// 更新（非必需，调用时可传递数据）
-renderPipeline.update()
-
-// 渲染
-renderPipeline.render()
+renderPipeline.start()
 ```
 
 更多用法请查看demo。
