@@ -31,4 +31,8 @@ class SimpleGLContext(surface: Surface? = null) : GLContext {
         glThread.post(task)
     }
 
+    override fun release() {
+        glThread.release()
+    }
+
 }

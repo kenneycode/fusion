@@ -8,6 +8,7 @@ import java.nio.ByteBuffer
 import android.opengl.GLES30
 import android.opengl.Matrix
 import io.github.kenneycode.fusion.common.Constants
+import io.github.kenneycode.fusion.texture.Texture
 
 /**
  *
@@ -115,6 +116,17 @@ class GLUtil {
             glTexImage2D(
                     GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width,
                     bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b)
+        }
+
+        /**
+         *
+         * 将纹理转换为bitmap
+         *
+         * @param texture 纹理
+         *
+         */
+        fun texture2Bitmap(texture: Texture): Bitmap {
+            return texture2Bitmap(texture.texture, texture.width, texture.height)
         }
 
         /**

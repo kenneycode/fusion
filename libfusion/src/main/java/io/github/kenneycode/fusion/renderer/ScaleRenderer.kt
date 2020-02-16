@@ -1,5 +1,6 @@
 package io.github.kenneycode.fusion.renderer
 
+import android.opengl.GLES20
 import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 import io.github.kenneycode.fusion.texture.TexturePool
 
@@ -16,7 +17,7 @@ import io.github.kenneycode.fusion.texture.TexturePool
 class ScaleRenderer : SimpleRenderer() {
 
     // 缩放比例
-    var scale = 1.0f
+    private var scale = 1.0f
 
     override fun bindOutput() {
         val outputWidth = (scale * input.first().width).toInt()
@@ -33,7 +34,12 @@ class ScaleRenderer : SimpleRenderer() {
                 frameBuffer.attachTexture(output)
             }
             frameBuffer.bind()
+            GLES20.glViewport(0, 0, output.width, output.height)
         }
+    }
+
+    fun setScale(scale: Float) {
+        this.scale = scale
     }
 
 }

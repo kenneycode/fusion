@@ -58,6 +58,7 @@ class Constants {
 
         val OES_FRAGMENT_SHADER =
             "#extension GL_OES_EGL_image_external : require\n" +
+            "precision mediump float;\n" +
             "varying vec2 v_textureCoordinate;\n" +
             "uniform samplerExternalOES u_texture;\n" +
             "void main() {\n" +

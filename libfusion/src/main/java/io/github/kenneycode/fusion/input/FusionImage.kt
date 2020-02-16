@@ -19,20 +19,32 @@ import java.nio.ByteBuffer
 
 class FusionImage(private val image: Bitmap) : RenderPipeline.Input {
 
+    private lateinit var inputReceiver: InputReceiver
+    private lateinit var imageTexture: Texture
+
+    override fun setInputReceiver(inputReceiver: InputReceiver) {
+        this.inputReceiver = inputReceiver
+    }
+
     override fun onInit() {
+        val buffer = ByteBuffer.allocate(image.width * image.height * 4)
+        image.copyPixelsToBuffer(buffer)
+        buffer.position(0)
+        imageTexture = TexturePool.obtainTexture(image.width, image.height).apply {
+            retain = true
+            setData(buffer)
+        }
     }
 
     override fun onUpdate(data: MutableMap<String, Any>) {
     }
 
-    override fun getInputTexture(): Texture {
-        val buffer = ByteBuffer.allocate(image.width * image.height * 4)
-        image.copyPixelsToBuffer(buffer)
-        buffer.position(0)
-        return TexturePool.obtainTexture(image.width, image.height).apply {
-            retain = true
-            setData(buffer)
-        }
+    override fun start() {
+        inputReceiver.onInputReady(imageTexture)
+    }
+
+    override fun onRelease() {
+        imageTexture.decreaseRef()
     }
 
 }

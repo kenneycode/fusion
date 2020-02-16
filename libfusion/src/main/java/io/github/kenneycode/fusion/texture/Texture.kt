@@ -17,9 +17,8 @@ import java.nio.Buffer
  *
  */
 
-class Texture(val width: Int, val height: Int, val type: Int = GL_TEXTURE_2D) : Ref() {
+class Texture(val width: Int, val height: Int, var texture: Int = 0, val type: Int = GL_TEXTURE_2D) : Ref() {
 
-    var texture = 0
     var retain = false
 
     fun init() {

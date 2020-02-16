@@ -10,8 +10,9 @@ import io.github.kenneycode.fusion.common.Constants.Companion.SIMPLE_FRAGMENT_SH
 
 import java.util.LinkedList
 
-import io.github.kenneycode.fusion.common.FusionGLView
 import io.github.kenneycode.fusion.context.FusionGLThread
+import io.github.kenneycode.fusion.context.GLContext
+import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.renderer.DisplayRenderer
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.util.GLUtil
@@ -26,7 +27,7 @@ import io.github.kenneycode.fusion.util.GLUtil
  *
  */
 
-class FusionGLTextureView : TextureView, FusionGLView {
+class FusionView : TextureView, RenderPipeline.Output, GLContext {
 
     private var glThread: FusionGLThread? = null
     private var displayRenderer = DisplayRenderer(Constants.SIMPLE_VERTEX_SHADER, SIMPLE_FRAGMENT_SHADER)
@@ -137,6 +138,12 @@ class FusionGLTextureView : TextureView, FusionGLView {
                 glThread!!.release()
             })
         }
+    }
+
+    override fun onRelease() {
+    }
+
+    override fun release() {
     }
 
 }

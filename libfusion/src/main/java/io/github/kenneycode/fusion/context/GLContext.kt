@@ -21,4 +21,6 @@ interface GLContext {
      */
     fun runOnGLContext(task: () -> Unit)
 
+    fun release()
+
 }

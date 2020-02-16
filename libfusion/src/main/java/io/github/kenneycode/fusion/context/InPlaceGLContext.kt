@@ -1,5 +1,7 @@
 package io.github.kenneycode.fusion.context
 
+import android.view.Surface
+
 /**
  *
  * Coded by kenney
@@ -11,6 +13,9 @@ package io.github.kenneycode.fusion.context
  */
 
 class InPlaceGLContext : GLContext {
+
+    override fun release() {
+    }
 
     /**
      *

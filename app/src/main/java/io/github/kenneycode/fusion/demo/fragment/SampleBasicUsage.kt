@@ -30,19 +30,18 @@ import kotlinx.android.synthetic.main.fragment_sample_fusion_gl_texture_view.*
 
 class SampleBasicUsage : Fragment() {
 
+    private lateinit var renderPipeline: RenderPipeline
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_sample_fusion_gl_texture_view, container,  false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        // 创建图片输入
-        val image = FusionImage(Util.decodeBitmapFromAssets("test.png")!!)
-
         // 创建一个scale renderer
         val scaleRenderer = ScaleRenderer().apply {
             setFlip(false, true)
-            scale = 0.8f
+            setScale(0.8f)
         }
 
         // 创建一个crop renderer
@@ -51,25 +50,17 @@ class SampleBasicUsage : Fragment() {
         }
 
         // 创建RenderChain并添加renderer
-        val renderChain = RenderChain.create()
+        val renderer = RenderChain.create()
                 .addRenderer(scaleRenderer)
                 .addRenderer(cropRenderer)
 
-        // 创建RenderPipeline
-        val renderPipeline = RenderPipeline
-                .input(image)
-                .renderWith(renderChain)
-                .useContext(fusionGLTextureView)
-                .output(fusionGLTextureView)
+        renderPipeline = RenderPipeline
+                .input(FusionImage(Util.decodeBitmapFromAssets("test.png")!!))
+                .renderWith(renderer)
+                .useContext(fusionView)
+                .output(fusionView)
 
-        // 初始化
-        renderPipeline.init()
-
-        // 更新（非必需）
-        renderPipeline.update()
-
-        // 渲染
-        renderPipeline.render()
+        renderPipeline.start()
 
     }
 
@@ -77,6 +68,7 @@ class SampleBasicUsage : Fragment() {
         TexturePool.release()
         FrameBufferPool.release()
         GLProgramPool.release()
+        renderPipeline.release()
         super.onDestroy()
     }
 
