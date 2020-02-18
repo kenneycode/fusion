@@ -3,4 +3,5 @@
     <string name="sample_0">基本用法</string>
     <string name="sample_1">GLSurfaceView用法0</string>
     <string name="sample_2">MVP matrix</string>
+    <string name="sample_3">视频渲染</string>
 </resources>

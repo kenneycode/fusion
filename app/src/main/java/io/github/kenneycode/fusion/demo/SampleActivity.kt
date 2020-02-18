@@ -6,6 +6,7 @@ import androidx.core.util.Pair
 import io.github.kenneycode.fusion.demo.fragment.SampleBasicUsage
 import io.github.kenneycode.fusion.demo.fragment.SampleGLSurfaceViewUsage0
 import io.github.kenneycode.fusion.demo.fragment.SampleMVPMatrix
+import io.github.kenneycode.fusion.demo.fragment.SampleVideo
 
 /**
  *
@@ -26,7 +27,8 @@ class SimpleActivity : AppCompatActivity() {
         val samples = listOf(
             Pair(R.string.sample_0, SampleBasicUsage::class.java),
             Pair(R.string.sample_1, SampleGLSurfaceViewUsage0::class.java),
-            Pair(R.string.sample_2, SampleMVPMatrix::class.java)
+            Pair(R.string.sample_2, SampleMVPMatrix::class.java),
+                Pair(R.string.sample_3, SampleVideo::class.java)
         )
 
     }

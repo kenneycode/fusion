@@ -4,6 +4,6 @@ import io.github.kenneycode.fusion.texture.Texture
 
 interface InputReceiver {
 
-    fun onInputReady(input: Texture)
+    fun onInputReady(input: Texture, data: MutableMap<String, Any> = mutableMapOf())
 
 }

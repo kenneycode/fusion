@@ -80,8 +80,8 @@ class RenderPipeline private constructor() : InputReceiver {
         }
     }
 
-    override fun onInputReady(input: Texture) {
-        update()
+    override fun onInputReady(input: Texture, data: MutableMap<String, Any>) {
+        update(data)
         render(input)
     }
 
