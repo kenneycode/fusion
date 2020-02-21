@@ -14,6 +14,7 @@ import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.program.GLProgramPool
 import io.github.kenneycode.fusion.renderer.CropRenderer
+import io.github.kenneycode.fusion.renderer.LUTRenderer
 import io.github.kenneycode.fusion.renderer.ScaleRenderer
 import io.github.kenneycode.fusion.texture.TexturePool
 import kotlinx.android.synthetic.main.fragment_sample_fusion_gl_texture_view.*
@@ -38,28 +39,20 @@ class SampleBasicUsage : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        // 创建一个scale renderer
-        val scaleRenderer = ScaleRenderer().apply {
-            setFlip(false, true)
-            setScale(0.8f)
-        }
-
-        // 创建一个crop renderer
-        val cropRenderer = CropRenderer().apply {
-            setCropRect(0.1f, 0.9f, 0.8f, 0.2f)
-        }
-
-        // 创建RenderChain并添加renderer
+        // 创建RenderChain并添加一些renderer
         val renderer = RenderChain.create()
-                .addRenderer(scaleRenderer)
-                .addRenderer(cropRenderer)
+                .addRenderer(ScaleRenderer().apply { setFlip(false, true); setScale(0.8f) })
+                .addRenderer(CropRenderer().apply { setCropRect(0.1f, 0.9f, 0.8f, 0.2f) })
+                .addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
 
+        // 创建RenderPipeline，连接输入、渲染器与输出
         renderPipeline = RenderPipeline
                 .input(FusionImage(Util.decodeBitmapFromAssets("test.png")!!))
                 .renderWith(renderer)
                 .useContext(fusionView)
                 .output(fusionView)
 
+        // 开始处理
         renderPipeline.start()
 
     }

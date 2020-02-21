@@ -15,13 +15,13 @@ import io.github.kenneycode.fusion.util.Util
  *
  */
 
-class Texture2DParameter(key: String, private var value: Int) : UniformParameter(key) {
+class Texture2DParameter(key: String, private var value: Int, private val index: Int) : UniformParameter(key) {
 
     override fun onBind(location: Int) {
         Util.assert(glIsTexture(value))
-        glActiveTexture(GL_TEXTURE0)
+        glActiveTexture(GL_TEXTURE0 + index)
         glBindTexture(GL_TEXTURE_2D, value)
-        glUniform1i(location, 0)
+        glUniform1i(location, index)
     }
 
     override fun update(value: Any) {

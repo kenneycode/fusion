@@ -15,6 +15,7 @@ import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.program.GLProgramPool
 import io.github.kenneycode.fusion.renderer.CropRenderer
+import io.github.kenneycode.fusion.renderer.LUTRenderer
 import io.github.kenneycode.fusion.renderer.OES2RGBARenderer
 import io.github.kenneycode.fusion.renderer.ScaleRenderer
 import io.github.kenneycode.fusion.texture.TexturePool
@@ -40,22 +41,19 @@ class SampleVideo : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val cropRenderer = CropRenderer().apply {
-            setCropRect(0.1f, 0.9f, 0.8f, 0.2f)
-        }
+        // 创建RenderChain并添加一些renderer
+        val renderer = RenderChain.create()
+                .addRenderer(OES2RGBARenderer())
+                .addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
 
-        val oes2RGBARenderer = OES2RGBARenderer()
-
-        val renderChain = RenderChain.create()
-                .addRenderer(oes2RGBARenderer)
-                .addRenderer(cropRenderer)
-
+        // 创建RenderPipeline，连接输入、渲染器与输出
         renderPipeline = RenderPipeline
                 .input(FusionVideo("/sdcard/test.mp4"))
-                .renderWith(renderChain)
+                .renderWith(renderer)
                 .useContext(fusionView)
                 .output(fusionView)
 
+        // 开始处理
         renderPipeline.start()
 
     }

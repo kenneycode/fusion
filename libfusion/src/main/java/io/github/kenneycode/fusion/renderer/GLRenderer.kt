@@ -56,7 +56,7 @@ interface GLRenderer : Renderer {
      * @param value 纹理id
      *
      */
-    fun setUniformTexture2D(key: String, value: Int)
+    fun setUniformTexture2D(key: String, value: Int, index: Int = 0)
 
     /**
      *
@@ -77,6 +77,16 @@ interface GLRenderer : Renderer {
      *
      */
     fun setUniformMat4(key: String, value: FloatArray)
+
+    /**
+     *
+     * 设置float参数
+     *
+     * @param key float参数名
+     * @param value float参数
+     *
+     */
+    fun setUniformFloat(key: String, value: Float)
 
     /**
      *

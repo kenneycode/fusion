@@ -101,9 +101,9 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      * @param value 纹理id
      *
      */
-    override fun setUniformTexture2D(key: String, value: Int) {
+    override fun setUniformTexture2D(key: String, value: Int, index: Int) {
         setParameter(key, value) {
-            Texture2DParameter(key, value)
+            Texture2DParameter(key, value, index)
         }
     }
 
@@ -132,6 +132,19 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
     override fun setUniformMat4(key: String, value: FloatArray) {
         setParameter(key, value) {
             Mat4Parameter(key, value)
+        }
+    }
+
+    /**
+     *
+     * 设置float参数
+     *
+     * @param value float参数
+     *
+     */
+    override fun setUniformFloat(key: String, value: Float) {
+        setParameter(key, value) {
+            FloatParameter(key, value)
         }
     }
 

@@ -96,6 +96,22 @@ class GLUtil {
             glDeleteFramebuffers(1, temp, 0)
         }
 
+        fun bitmap2Texture(bitmap: Bitmap): Int {
+            val texture = createTexture(GL_TEXTURE_2D)
+            glBindTexture(GL_TEXTURE_2D, texture)
+            val b = ByteBuffer.allocate(bitmap.width * bitmap.height * 4)
+            bitmap.copyPixelsToBuffer(b)
+            b.position(0)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+            glTexImage2D(
+                    GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width,
+                    bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b)
+            return texture
+        }
+
         /**
          *
          * 将bitmap转换为纹理
