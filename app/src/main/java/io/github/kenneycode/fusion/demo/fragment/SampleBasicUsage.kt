@@ -14,6 +14,7 @@ import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.program.GLProgramPool
 import io.github.kenneycode.fusion.renderer.CropRenderer
+import io.github.kenneycode.fusion.renderer.GaussianBlurRenderer
 import io.github.kenneycode.fusion.renderer.LUTRenderer
 import io.github.kenneycode.fusion.renderer.ScaleRenderer
 import io.github.kenneycode.fusion.texture.TexturePool
@@ -44,6 +45,7 @@ class SampleBasicUsage : Fragment() {
                 .addRenderer(ScaleRenderer().apply { setFlip(false, true); setScale(0.8f) })
                 .addRenderer(CropRenderer().apply { setCropRect(0.1f, 0.9f, 0.8f, 0.2f) })
                 .addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+                .addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })
 
         // 创建RenderPipeline，连接输入、渲染器与输出
         renderPipeline = RenderPipeline

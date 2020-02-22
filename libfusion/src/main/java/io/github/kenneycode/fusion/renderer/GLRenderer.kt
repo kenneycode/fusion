@@ -90,6 +90,26 @@ interface GLRenderer : Renderer {
 
     /**
      *
+     * 设置float数组参数
+     *
+     * @param key float数组参数名
+     * @param value float数组参数
+     *
+     */
+    fun setUniformFloatArray(key: String, value: FloatArray)
+
+    /**
+     *
+     * 设置int参数
+     *
+     * @param key int参数名
+     * @param value int参数
+     *
+     */
+    fun setUniformInt(key: String, value: Int)
+
+    /**
+     *
      * 设置MVP
      *
      * @param value 4*4 MVP Matrix

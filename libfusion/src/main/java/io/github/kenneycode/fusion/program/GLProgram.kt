@@ -1,21 +1,12 @@
 package io.github.kenneycode.fusion.program
 
+import android.opengl.GLES20.*
+import android.util.Log
 import io.github.kenneycode.fusion.common.Ref
 import io.github.kenneycode.fusion.common.Shader
 import io.github.kenneycode.fusion.parameter.Parameter
 
-import android.opengl.GLES20.GL_FRAGMENT_SHADER
-import android.opengl.GLES20.GL_VERTEX_SHADER
-import android.opengl.GLES20.glAttachShader
-import android.opengl.GLES20.glCompileShader
-import android.opengl.GLES20.glCreateProgram
-import android.opengl.GLES20.glCreateShader
-import android.opengl.GLES20.glDeleteProgram
-import android.opengl.GLES20.glDeleteShader
-import android.opengl.GLES20.glIsProgram
-import android.opengl.GLES20.glLinkProgram
-import android.opengl.GLES20.glShaderSource
-import android.opengl.GLES20.glUseProgram
+import io.github.kenneycode.fusion.util.Util
 
 /**
  *
@@ -49,12 +40,28 @@ class GLProgram(val shader: Shader) : Ref() {
             glShaderSource(fragmentShader, shader!!.fragmentShader)
 
             glCompileShader(vertexShader)
+            glGetShaderInfoLog(vertexShader).let {
+                if (it.isNotEmpty()) {
+                    Log.e("debug", "vertex shader info log = $it")
+                }
+            }
+
             glCompileShader(fragmentShader)
+            glGetShaderInfoLog(fragmentShader).let {
+                if (it.isNotEmpty()) {
+                    Log.e("debug", "fragment shader info log = $it")
+                }
+            }
 
             glAttachShader(program, vertexShader)
             glAttachShader(program, fragmentShader)
 
             glLinkProgram(program)
+            glGetProgramInfoLog(program).let {
+                if (it.isNotEmpty()) {
+                    Log.e("debug", "program info log = $it")
+                }
+            }
 
             glDeleteShader(vertexShader)
             glDeleteShader(fragmentShader)

@@ -14,7 +14,7 @@ import io.github.kenneycode.fusion.texture.Texture
  *
  */
 
-class RenderChain private constructor(): Renderer {
+open class RenderChain protected constructor(): Renderer {
 
     private val renderGraph = RenderGraph.create()
     private var tailRenderer: Renderer? = null
@@ -114,6 +114,10 @@ class RenderChain private constructor(): Renderer {
      */
     override fun render() {
         return renderGraph.render()
+    }
+
+    fun getInput(): List<Texture> {
+        return renderGraph.getInput()
     }
 
     /**

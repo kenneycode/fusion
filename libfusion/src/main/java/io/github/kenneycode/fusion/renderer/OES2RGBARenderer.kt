@@ -20,7 +20,7 @@ class OES2RGBARenderer : SimpleRenderer(Constants.OES_VERTEX_SHADER, Constants.O
     }
 
     override fun update(data: MutableMap<String, Any>): Boolean {
-        setUniformMat4("u_stMatrix", data[DataKeys.ST_MATRIX] as FloatArray? ?: Constants.IDENTITY_MATRIX)
+        setUniformMat4("u_stMatrix", data[DataKeys.ST_MATRIX] as? FloatArray ?: Constants.IDENTITY_MATRIX)
         return true
     }
 

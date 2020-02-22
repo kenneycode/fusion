@@ -14,10 +14,7 @@ import io.github.kenneycode.fusion.input.FusionVideo
 import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.program.GLProgramPool
-import io.github.kenneycode.fusion.renderer.CropRenderer
-import io.github.kenneycode.fusion.renderer.LUTRenderer
-import io.github.kenneycode.fusion.renderer.OES2RGBARenderer
-import io.github.kenneycode.fusion.renderer.ScaleRenderer
+import io.github.kenneycode.fusion.renderer.*
 import io.github.kenneycode.fusion.texture.TexturePool
 import kotlinx.android.synthetic.main.fragment_sample_fusion_gl_texture_view.*
 
@@ -45,6 +42,7 @@ class SampleVideo : Fragment() {
         val renderer = RenderChain.create()
                 .addRenderer(OES2RGBARenderer())
                 .addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+                .addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })
 
         // 创建RenderPipeline，连接输入、渲染器与输出
         renderPipeline = RenderPipeline

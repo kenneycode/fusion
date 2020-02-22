@@ -5,7 +5,6 @@ import android.opengl.GLES20.*
 import android.util.Log
 import io.github.kenneycode.fusion.common.Constants
 import io.github.kenneycode.fusion.common.Shader
-import io.github.kenneycode.fusion.framebuffer.FrameBuffer
 import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 import io.github.kenneycode.fusion.program.GLProgram
 import io.github.kenneycode.fusion.program.GLProgramPool
@@ -14,7 +13,6 @@ import io.github.kenneycode.fusion.parameter.*
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.util.GLUtil
 import io.github.kenneycode.fusion.util.Util
-import org.w3c.dom.Text
 
 /**
  *
@@ -66,7 +64,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      */
     override fun setAttributeFloats(key: String, value: FloatArray, componentCount: Int) {
         setParameter(key, value) {
-            FloatArrayParameter(key, value, componentCount)
+            AttributeParameter(key, value, componentCount)
         }
     }
 
@@ -139,12 +137,33 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      * 设置float参数
      *
+     * @param key float参数名
      * @param value float参数
      *
      */
     override fun setUniformFloat(key: String, value: Float) {
         setParameter(key, value) {
             FloatParameter(key, value)
+        }
+    }
+
+    /**
+     *
+     * 设置int参数
+     *
+     * @param key int参数名
+     * @param value int参数
+     *
+     */
+    override fun setUniformInt(key: String, value: Int) {
+        setParameter(key, value) {
+            IntParameter(key, value)
+        }
+    }
+
+    override fun setUniformFloatArray(key: String, value: FloatArray) {
+        setParameter(key, value) {
+            FloatArrayParameter(key, value)
         }
     }
 

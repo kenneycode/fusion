@@ -1,6 +1,12 @@
 package io.github.kenneycode.fusion.parameter
 
 import android.opengl.GLES20
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+
+import android.opengl.GLES20.GL_FLOAT
+import android.opengl.GLES20.glEnableVertexAttribArray
+import android.opengl.GLES20.glVertexAttribPointer
 import io.github.kenneycode.fusion.util.Util
 
 /**
@@ -9,11 +15,11 @@ import io.github.kenneycode.fusion.util.Util
  *
  * http://www.github.com/kenneycode/fusion
  *
- * Shader attribute参数基类
+ * Shader attribute参数
  *
  */
 
-abstract class AttributeParameter(key : String) : Parameter(key) {
+class AttributeParameter(key: String, private var value: FloatArray, private val componentCount: Int = 2) : Parameter(key) {
 
     /**
      *
@@ -28,6 +34,24 @@ abstract class AttributeParameter(key : String) : Parameter(key) {
         }
         Util.assert(location >= 0)
         onBind(location)
+    }
+
+    override fun onBind(location: Int) {
+        val vertexBuffer = ByteBuffer.allocateDirect(value.size * java.lang.Float.SIZE / 8)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer()
+                .apply {
+                    put(value)
+                    position(0)
+                }
+        glVertexAttribPointer(location, componentCount, GL_FLOAT, false, 0, vertexBuffer)
+        glEnableVertexAttribArray(location)
+    }
+
+    override fun update(value: Any) {
+        (value as? FloatArray)?.let {
+            this.value = it
+        }
     }
 
 }

@@ -101,6 +101,30 @@ class Constants {
             "    gl_FragColor = newColor;\n" +
             "}"
 
+        val GAUSSIAN_BLUR_FRAGMENT_SHADER =
+            "precision mediump float;\n" +
+            "varying vec2 v_textureCoordinate;\n" +
+            "uniform sampler2D u_texture;\n" +
+            "uniform float weights[6];\n" +
+            "uniform float hOffset;\n" +
+            "uniform float vOffset;\n" +
+            "uniform int orientation;\n" +
+            "void main() {\n" +
+            "\tvec4 color = texture2D(u_texture, v_textureCoordinate) * weights[0];\n" +
+            "\tif (orientation == 0) {\n" +
+            "\t\tfor (int i = 1; i < 6; ++i) {\n" +
+            "\t\t\tcolor += texture2D(u_texture, vec2(v_textureCoordinate.x - float(i) * hOffset, v_textureCoordinate.y)) * weights[i];\n" +
+            "\t\t\tcolor += texture2D(u_texture, vec2(v_textureCoordinate.x + float(i) * hOffset, v_textureCoordinate.y)) * weights[i];\n" +
+            "\t\t}\n" +
+            "\t} else {\n" +
+            "\t\tfor (int i = 1; i < 6; ++i) {\n" +
+            "\t\t\tcolor += texture2D(u_texture, vec2(v_textureCoordinate.x, v_textureCoordinate.y - float(i) * vOffset)) * weights[i];\n" +
+            "\t\t\tcolor += texture2D(u_texture, vec2(v_textureCoordinate.x, v_textureCoordinate.y + float(i) * vOffset)) * weights[i];\n" +
+            "\t\t}\n" +
+            "\t}\n" +
+            "    gl_FragColor = color;\n" +
+            "}"
+
         val SIMPLE_VERTEX = floatArrayOf(-1f, -1f, -1f, 1f, 1f, 1f, -1f, -1f, 1f, 1f, 1f, -1f)
         val SIMPLE_VERTEX_FLIP_X = floatArrayOf(1f, -1f, 1f, 1f, -1f, 1f, 1f, -1f, -1f, 1f, -1f, -1f)
         val SIMPLE_VERTEX_FLIP_Y = floatArrayOf(-1f, 1f, -1f, -1f, 1f, -1f, -1f, 1f, 1f, -1f, 1f, 1f)

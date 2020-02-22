@@ -46,6 +46,7 @@ class FusionVideo(private val videoPath: String) : RenderPipeline.Input {
         surface = Surface(surfaceTexture)
         videoPlayer.setDataSource(videoPath)
         videoPlayer.setSurface(surface)
+        videoPlayer.isLooping = true
         videoPlayer.prepare()
         videoSize = Size(videoPlayer.videoWidth, videoPlayer.videoHeight)
     }

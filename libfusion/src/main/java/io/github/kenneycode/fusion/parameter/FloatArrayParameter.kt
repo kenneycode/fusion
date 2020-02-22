@@ -1,11 +1,6 @@
 package io.github.kenneycode.fusion.parameter
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-
-import android.opengl.GLES20.GL_FLOAT
-import android.opengl.GLES20.glEnableVertexAttribArray
-import android.opengl.GLES20.glVertexAttribPointer
+import android.opengl.GLES20.*
 
 /**
  *
@@ -17,18 +12,10 @@ import android.opengl.GLES20.glVertexAttribPointer
  *
  */
 
-class FloatArrayParameter(key: String, private var value: FloatArray, private val componentCount: Int = 2) : AttributeParameter(key) {
+class FloatArrayParameter(key: String, private var value: FloatArray) : UniformParameter(key) {
 
     override fun onBind(location: Int) {
-        val vertexBuffer = ByteBuffer.allocateDirect(value.size * java.lang.Float.SIZE / 8)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer()
-                .apply {
-                    put(value)
-                    position(0)
-                }
-        glVertexAttribPointer(location, componentCount, GL_FLOAT, false, 0, vertexBuffer)
-        glEnableVertexAttribArray(location)
+        glUniform1fv(location, value.size, value, 0)
     }
 
     override fun update(value: Any) {
