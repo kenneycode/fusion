@@ -159,6 +159,7 @@ class RenderGraph private constructor() : Renderer {
      */
     private fun renderByLayer(input: List<Texture>): Texture? {
         var intermediateOutput: Texture? = null
+        input.forEach { it.increaseRef() }
         rootNode.input.addAll(input)
         layerTraversal(rootNode) { node ->
             node.renderer.setInput(node.input)
@@ -218,6 +219,10 @@ class RenderGraph private constructor() : Renderer {
                 nodeProcessor(node)
             }
         }
+    }
+
+    fun getInput(): List<Texture> {
+        return input
     }
 
     /**
