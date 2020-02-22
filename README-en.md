@@ -33,47 +33,49 @@ then add the following code to the `gradle` of your module:
 
 ```
 dependencies {
-	implementation 'com.github.kenneycode:fusion:1.0.4'
+	implementation 'com.github.kenneycode:fusion:1.0.6'
 }
 ```
 
-## Basic usage
+## Basic usage of image rendering
 
 ```java
-// create the input image
-val image = FusionImage(Util.decodeBitmapFromAssets("test.png")!!)
+// create RenderChain and add some renderers
+val renderer = RenderChain.create()
+	.addRenderer(ScaleRenderer().apply { setFlip(false, true); setScale(0.8f) })
+	.addRenderer(CropRenderer().apply { setCropRect(0.1f, 0.9f, 0.8f, 0.2f) })
+	.addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+	.addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })
 
-// create a renderer for test
-val scaleRenderer = ScaleRenderer().apply {
-    setFlip(false, true)
-    scale = 0.8f
-}
+// create RenderPipeline，connecting input, renderer and ouput
+renderPipeline = RenderPipeline
+	.input(FusionImage(Util.decodeBitmapFromAssets("test.png")!!))
+	.renderWith(renderer)
+	.useContext(fusionView)
+	.output(fusionView)
 
-// create a renderer for test
-val cropRenderer = CropRenderer().apply {
-    setCropRect(0.1f, 0.9f, 0.8f, 0.2f)
-}
+// start processing
+renderPipeline.start()
+```
 
-// create RenderChain and add renderers
-val renderChain = RenderChain.create()
-    .addRenderer(scaleRenderer)
-    .addRenderer(cropRenderer)
+## Basic usage of video rendering
 
-// create RenderPipeline to connect the input/output to RenderChain
-val renderPipeline = RenderPipeline
-    .input(image)
-    .renderWith(renderChain)
-    .useContext(fusionGLTextureView)
-    .output(fusionGLTextureView)
+```java
+// create RenderChain and add some renderers
+val renderer = RenderChain.create()
+	.addRenderer(OES2RGBARenderer())
+	.addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+	.addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })
 
-// init
-renderPipeline.init()
+// create RenderPipeline，connecting input, renderer and ouput
+renderPipeline = RenderPipeline
+    .input(FusionVideo("/sdcard/test.mp4"))
+    .renderWith(renderer)
+    .useContext(fusionView)
+    .output(fusionView)
 
-// update（you can pass some data if needed）
-renderPipeline.update()
-
-// render
-renderPipeline.render()
+// start processing
+renderPipeline.start()
 ```
 
 for more usages please see the demo.

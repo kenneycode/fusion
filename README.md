@@ -30,35 +30,48 @@ allprojects {
 
 ```
 dependencies {
-	implementation 'com.github.kenneycode:fusion:1.0.5'
+	implementation 'com.github.kenneycode:fusion:1.0.6'
 }
 ```
 
-## 基本用法
+## 图片渲染基本用法
 
 ```kotlin
-// 创建一个scale renderer
-val scaleRenderer = ScaleRenderer().apply {
-    setFlip(false, true)
-        setScale(0.8f)
-}
-
-// 创建一个crop renderer
-val cropRenderer = CropRenderer().apply {
-    setCropRect(0.1f, 0.9f, 0.8f, 0.2f)
-}
-
-// 创建RenderChain并添加renderer
+// 创建RenderChain并添加一些renderer
 val renderer = RenderChain.create()
-    .addRenderer(scaleRenderer)
-    .addRenderer(cropRenderer)
+	.addRenderer(ScaleRenderer().apply { setFlip(false, true); setScale(0.8f) })
+	.addRenderer(CropRenderer().apply { setCropRect(0.1f, 0.9f, 0.8f, 0.2f) })
+	.addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+	.addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })
 
-val renderPipeline = RenderPipeline
+// 创建RenderPipeline，连接输入、渲染器与输出
+renderPipeline = RenderPipeline
 	.input(FusionImage(Util.decodeBitmapFromAssets("test.png")!!))
+	.renderWith(renderer)
+	.useContext(fusionView)
+	.output(fusionView)
+
+// 开始处理
+renderPipeline.start()
+```
+
+## 视频渲染基本用法
+
+```kotlin
+// 创建RenderChain并添加一些renderer
+val renderer = RenderChain.create()
+	.addRenderer(OES2RGBARenderer())
+	.addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+	.addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })
+
+// 创建RenderPipeline，连接输入、渲染器与输出
+renderPipeline = RenderPipeline
+    .input(FusionVideo("/sdcard/test.mp4"))
     .renderWith(renderer)
     .useContext(fusionView)
     .output(fusionView)
 
+// 开始处理
 renderPipeline.start()
 ```
 
