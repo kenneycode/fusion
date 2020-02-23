@@ -22,6 +22,10 @@ class Util {
             }
         }
 
+        fun genId(obj: Any): String {
+            return "${obj.javaClass.simpleName}@${Integer.toHexString(System.identityHashCode(obj))}"
+        }
+
     }
 
 }

@@ -3,6 +3,7 @@ package io.github.kenneycode.fusion.process
 import io.github.kenneycode.fusion.renderer.Renderer
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.texture.TexturePool
+import io.github.kenneycode.fusion.util.Util
 import java.util.*
 
 /**
@@ -19,8 +20,8 @@ class RenderGraph private constructor() : Renderer {
 
     private var input = mutableListOf<Texture>()
     private var output: Texture? = null
-    private val rendererNodeMap = HashMap<Renderer, Node>()
-    private lateinit var rootNode: Node
+    private val rendererNodeMap = HashMap<String, Node>()
+    private val startNodes = mutableListOf<Node>()
 
     companion object {
 
@@ -32,16 +33,17 @@ class RenderGraph private constructor() : Renderer {
 
     /**
      *
-     * 设置根renderer
+     * 添加renderer
      *
      * @param renderer  根Renderer
      *
      * @return 返回此RenderGraph
      *
      */
-    fun setRootRenderer(renderer: Renderer): RenderGraph {
-        rootNode = Node(renderer)
-        rendererNodeMap[renderer] = rootNode
+    fun addRenderer(renderer: Renderer, id: String = Util.genId(renderer)): RenderGraph {
+        rendererNodeMap[id] = Node(renderer).also {
+            startNodes.add(it)
+        }
         return this
     }
 
@@ -49,25 +51,22 @@ class RenderGraph private constructor() : Renderer {
      *
      * 为一个Renderer连接一个后续Renderer
      *
-     * @param pre   前一个Renderer
-     * @param next  后一个Renderer
+     * @param pre   前一个Renderer id
+     * @param next  后一个Renderer id
      *
      * @return 返回此RenderGraph
      *
      */
-    fun connectRenderer(pre: Renderer, next: Renderer): RenderGraph {
-        val preNode = rendererNodeMap[pre]!!
-        if (!rendererNodeMap.containsKey(next)) {
-            rendererNodeMap[next] = Node(next, preNode.layer + 1)
+    fun connectRenderer(preId: String, nextId: String): RenderGraph {
+        val preNode = rendererNodeMap[preId]!!
+        val nextNode = rendererNodeMap[nextId]!!
+        preNode.addNext(nextNode)
+        nextNode.layer = if (preNode.layer + 1 > nextNode.layer) {
+            preNode.layer + 1
+        } else {
+            nextNode.layer
         }
-        rendererNodeMap[next]?.let { nextNode ->
-            preNode.addNext(nextNode)
-            nextNode.layer = if (preNode.layer + 1 > nextNode.layer) {
-                preNode.layer + 1
-            } else {
-                nextNode.layer
-            }
-        }
+        startNodes.remove(nextNode)
         return this
     }
 
@@ -77,7 +76,7 @@ class RenderGraph private constructor() : Renderer {
      *
      */
     override fun init() {
-        layerTraversal(rootNode) { node ->
+        layerTraversal(startNodes) { node ->
             node.renderer.init()
         }
     }
@@ -92,7 +91,7 @@ class RenderGraph private constructor() : Renderer {
      *
      */
     override fun update(data: MutableMap<String, Any>): Boolean {
-        layerTraversal(rootNode) { node ->
+        layerTraversal(startNodes) { node ->
             node.renderer.update(data)
         }
         return true
@@ -160,8 +159,8 @@ class RenderGraph private constructor() : Renderer {
     private fun renderByLayer(input: List<Texture>): Texture? {
         var intermediateOutput: Texture? = null
         input.forEach { it.increaseRef() }
-        rootNode.input.addAll(input)
-        layerTraversal(rootNode) { node ->
+        startNodes.forEach { it.input.addAll(input) }
+        layerTraversal(startNodes) { node ->
             node.renderer.setInput(node.input)
             node.renderer.setOutput(
                 if (node.nextNodes.isEmpty()) {
@@ -196,11 +195,11 @@ class RenderGraph private constructor() : Renderer {
      * @param nodeProcessor 节点处理器
      *
      */
-    private fun layerTraversal(rootNode: Node, nodeProcessor: (node: Node) -> Unit) {
+    private fun layerTraversal(startNodes: MutableList<Node>, nodeProcessor: (node: Node) -> Unit) {
         val traversalQueue = LinkedList<Node>()
         val queuedNodes = mutableSetOf<Node>()
         val layerNodes = mutableListOf<MutableList<Node>>()
-        traversalQueue.addLast(rootNode)
+        traversalQueue.addAll(startNodes)
         while (!traversalQueue.isEmpty()) {
             val node = traversalQueue.removeFirst()
             if (node.layer >= layerNodes.size) {
@@ -231,7 +230,7 @@ class RenderGraph private constructor() : Renderer {
      *
      */
     override fun release() {
-        layerTraversal(rootNode) { node ->
+        layerTraversal(startNodes) { node ->
             node.renderer.release()
         }
     }

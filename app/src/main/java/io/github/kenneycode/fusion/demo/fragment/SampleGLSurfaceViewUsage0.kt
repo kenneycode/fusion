@@ -77,8 +77,9 @@ class SampleGLSurfaceViewUsage0 : Fragment() {
 
                     // 创建RenderGraph
                     renderGraph = RenderGraph.create()
-                            .setRootRenderer(simpleRenderer)
-                            .connectRenderer(simpleRenderer, displayRenderer).apply {
+                            .addRenderer(simpleRenderer, "simpleRenderer")
+                            .addRenderer(displayRenderer, "displayRenderer")
+                            .connectRenderer("simpleRenderer", "displayRenderer").apply {
                                 init()
                             }
 

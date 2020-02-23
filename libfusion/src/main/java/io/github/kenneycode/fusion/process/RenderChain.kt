@@ -3,6 +3,7 @@ package io.github.kenneycode.fusion.process
 import io.github.kenneycode.fusion.context.GLContext
 import io.github.kenneycode.fusion.renderer.Renderer
 import io.github.kenneycode.fusion.texture.Texture
+import io.github.kenneycode.fusion.util.Util
 
 /**
  *
@@ -17,7 +18,7 @@ import io.github.kenneycode.fusion.texture.Texture
 open class RenderChain protected constructor(): Renderer {
 
     private val renderGraph = RenderGraph.create()
-    private var tailRenderer: Renderer? = null
+    private var tailRendererId: String? = null
 
     companion object {
 
@@ -51,22 +52,19 @@ open class RenderChain protected constructor(): Renderer {
 
     /**
      *
-     * 添加后一个Renderer
+     * 添加一个Renderer
      *
-     * @param next 后一个Renderer
+     * @param renderer Renderer
      *
      * @return 返回此RenderChain
      *
      */
-    fun addRenderer(next: Renderer): RenderChain {
-        tailRenderer.let {
-            if (it == null) {
-                renderGraph.setRootRenderer(next)
-            } else {
-                renderGraph.connectRenderer(it, next)
-            }
+    fun addRenderer(renderer: Renderer, id: String = Util.genId(renderer)): RenderChain {
+        renderGraph.addRenderer(renderer, id)
+        tailRendererId?.let {
+            renderGraph.connectRenderer(it, id)
         }
-        tailRenderer = next
+        tailRendererId = id
         return this
     }
 
