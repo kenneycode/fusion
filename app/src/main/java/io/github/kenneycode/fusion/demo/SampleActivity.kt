@@ -3,10 +3,7 @@ package io.github.kenneycode.fusion.demo
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.util.Pair
-import io.github.kenneycode.fusion.demo.fragment.SampleBasicUsage
-import io.github.kenneycode.fusion.demo.fragment.SampleGLSurfaceViewUsage0
-import io.github.kenneycode.fusion.demo.fragment.SampleMVPMatrix
-import io.github.kenneycode.fusion.demo.fragment.SampleVideo
+import io.github.kenneycode.fusion.demo.fragment.*
 
 /**
  *
@@ -28,7 +25,8 @@ class SimpleActivity : AppCompatActivity() {
             Pair(R.string.sample_0, SampleBasicUsage::class.java),
             Pair(R.string.sample_1, SampleGLSurfaceViewUsage0::class.java),
             Pair(R.string.sample_2, SampleMVPMatrix::class.java),
-                Pair(R.string.sample_3, SampleVideo::class.java)
+            Pair(R.string.sample_3, SampleVideo::class.java),
+            Pair(R.string.sample_4, SampleOffscreenRender::class.java)
         )
 
     }

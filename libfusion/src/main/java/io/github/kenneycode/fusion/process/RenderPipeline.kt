@@ -32,7 +32,7 @@ class RenderPipeline private constructor() : InputReceiver {
 
     private var glContext: GLContext? = null
     private lateinit var input: Input
-    private lateinit var output: Output
+    private lateinit var output: InputReceiver
     private lateinit var renderer: Renderer
 
     fun renderWith(renderer: Renderer): RenderPipeline {
@@ -45,7 +45,7 @@ class RenderPipeline private constructor() : InputReceiver {
         return this
     }
 
-    fun output(output: Output): RenderPipeline {
+    fun output(output: InputReceiver): RenderPipeline {
         this.output = output
         return this
     }
@@ -53,13 +53,11 @@ class RenderPipeline private constructor() : InputReceiver {
     fun init() {
         input.onInit()
         renderer.init()
-        output.onInit()
     }
 
     fun update(data: MutableMap<String, Any> = mutableMapOf()) {
         input.onUpdate(data)
         renderer.update(data)
-        output.onUpdate(data)
     }
 
     fun render(input: Texture) {
@@ -68,7 +66,7 @@ class RenderPipeline private constructor() : InputReceiver {
         renderer.setOutput(outputTexture)
         renderer.render()
         renderer.getOutput()?.let {
-            output.onReceiveOutputTexture(it)
+            output.onInputReady(it)
         }
         outputTexture.decreaseRef()
     }
@@ -97,7 +95,6 @@ class RenderPipeline private constructor() : InputReceiver {
     fun release() {
         executeOnGLContext {
             input.onRelease()
-            output.onRelease()
             renderer.release()
             glContext?.release()
         }
@@ -108,15 +105,6 @@ class RenderPipeline private constructor() : InputReceiver {
         fun start()
         fun setInputReceiver(inputReceiver: InputReceiver)
         fun onInit()
-        fun onUpdate(data: MutableMap<String, Any>)
-        fun onRelease()
-
-    }
-
-    interface Output {
-
-        fun onInit()
-        fun onReceiveOutputTexture(texture: Texture)
         fun onUpdate(data: MutableMap<String, Any>)
         fun onRelease()
 

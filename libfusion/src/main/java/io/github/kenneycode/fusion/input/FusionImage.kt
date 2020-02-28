@@ -17,7 +17,11 @@ import java.nio.ByteBuffer
  *
  */
 
-class FusionImage(private val image: Bitmap) : RenderPipeline.Input {
+class FusionImage(private val image: Bitmap) : RenderPipeline.Input, InputReceiver {
+
+    override fun onInputReady(input: Texture, data: MutableMap<String, Any>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private lateinit var inputReceiver: InputReceiver
     private lateinit var imageTexture: Texture

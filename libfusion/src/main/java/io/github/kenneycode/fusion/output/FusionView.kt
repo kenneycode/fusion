@@ -7,15 +7,13 @@ import android.view.Surface
 import android.view.TextureView
 import io.github.kenneycode.fusion.common.Constants
 import io.github.kenneycode.fusion.common.Constants.Companion.SIMPLE_FRAGMENT_SHADER
-
-import java.util.LinkedList
-
 import io.github.kenneycode.fusion.context.FusionGLThread
 import io.github.kenneycode.fusion.context.GLContext
-import io.github.kenneycode.fusion.process.RenderPipeline
+import io.github.kenneycode.fusion.input.InputReceiver
 import io.github.kenneycode.fusion.renderer.DisplayRenderer
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.util.GLUtil
+import java.util.*
 
 /**
  *
@@ -27,13 +25,14 @@ import io.github.kenneycode.fusion.util.GLUtil
  *
  */
 
-class FusionView : TextureView, RenderPipeline.Output, GLContext {
+class FusionView : TextureView, InputReceiver, GLContext {
 
     private var glThread: FusionGLThread? = null
     private var displayRenderer = DisplayRenderer(Constants.SIMPLE_VERTEX_SHADER, SIMPLE_FRAGMENT_SHADER)
     private val pendingTasks = LinkedList<() -> Unit>()
     private var surfaceWidth = 0
     private var surfaceHeight = 0
+    private var initialized = false
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -70,29 +69,12 @@ class FusionView : TextureView, RenderPipeline.Output, GLContext {
         }
     }
 
-    /**
-     *
-     * 初始化回调
-     *
-     */
-    override fun onInit() {
-        displayRenderer.init()
-    }
-
-    /**
-     *
-     * 更新数据回调
-     *
-     * @param data 传入的数据
-     *
-     */
-    override fun onUpdate(data: MutableMap<String, Any>) {
-
-    }
-
-    override fun onReceiveOutputTexture(texture: Texture) {
+    override fun onInputReady(input: Texture, data: MutableMap<String, Any>) {
+        if (!initialized) {
+            displayRenderer.init()
+        }
         displayRenderer.setDisplaySize(surfaceWidth, surfaceHeight)
-        displayRenderer.setInput(texture)
+        displayRenderer.setInput(input)
         displayRenderer.render()
         glThread?.swapBuffers()
         GLUtil.checkGLError()
@@ -138,9 +120,6 @@ class FusionView : TextureView, RenderPipeline.Output, GLContext {
                 glThread!!.release()
             })
         }
-    }
-
-    override fun onRelease() {
     }
 
     override fun release() {
