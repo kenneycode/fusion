@@ -18,6 +18,7 @@ import io.github.kenneycode.fusion.renderer.GaussianBlurRenderer
 import io.github.kenneycode.fusion.renderer.LUTRenderer
 import io.github.kenneycode.fusion.renderer.ScaleRenderer
 import io.github.kenneycode.fusion.texture.TexturePool
+import kotlinx.android.synthetic.main.fragment_sample_offscreen.*
 
 /**
  *
@@ -29,14 +30,22 @@ import io.github.kenneycode.fusion.texture.TexturePool
  *
  */
 
-class SampleOffscreenRender : Fragment() {
+class SampleImageOffscreenRender : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_sample_fusion_gl_texture_view, container,  false)
+        return inflater.inflate(R.layout.fragment_sample_offscreen, container,  false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        button.setOnClickListener { startSample() }
+
+    }
+
+    private fun startSample() {
+
+        val sourceImagePath = "test.png"
 
         // 创建RenderChain并添加一些renderer
         val renderer = RenderChain.create()
@@ -50,12 +59,17 @@ class SampleOffscreenRender : Fragment() {
 
         // 创建RenderPipeline，连接输入、渲染器与输出
         val renderPipeline = RenderPipeline
-                .input(FusionImage(Util.decodeBitmapFromAssets("test.png")!!))
+                .input(FusionImage(Util.decodeBitmapFromAssets(sourceImagePath)!!))
                 .renderWith(renderer)
                 .output(output)
 
         // 开始处理
         renderPipeline.start()
+
+        // 等待RenderPipeline执行完成
+        renderPipeline.flush()
+
+        activity?.runOnUiThread { tips.text = "bitmap已生成!" }
 
     }
 

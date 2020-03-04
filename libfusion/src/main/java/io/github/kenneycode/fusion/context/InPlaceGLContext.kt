@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.context
 
-import android.view.Surface
+import android.opengl.EGL14
+import android.opengl.EGLContext
 
 /**
  *
@@ -14,9 +15,9 @@ import android.view.Surface
 
 class InPlaceGLContext : GLContext {
 
-    override fun release() {
+    override fun getEGLContext(): EGLContext {
+        return EGL14.eglGetCurrentContext()
     }
-
     /**
      *
      * 将task在此OpenGL Context中执行
@@ -26,6 +27,9 @@ class InPlaceGLContext : GLContext {
      */
     override fun runOnGLContext(task: () -> Unit) {
         task.invoke()
+    }
+
+    override fun release() {
     }
 
 }

@@ -1,5 +1,7 @@
 package io.github.kenneycode.fusion.context
 
+import android.opengl.EGL14
+import android.opengl.EGLContext
 import android.view.Surface
 
 /**
@@ -18,6 +20,10 @@ class SimpleGLContext(surface: Surface? = null) : GLContext {
 
     init {
         glThread.init(surface)
+    }
+
+    override fun getEGLContext(): EGLContext {
+        return EGL14.eglGetCurrentContext()
     }
 
     /**

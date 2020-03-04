@@ -78,6 +78,10 @@ class FusionGLThread {
         semaphore.acquire()
     }
 
+    fun getEGLContext(): EGLContext {
+        return egl.eglContext
+    }
+
     /**
      *
      * 交换显示buffer

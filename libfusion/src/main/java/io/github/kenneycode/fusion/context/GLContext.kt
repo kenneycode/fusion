@@ -1,5 +1,7 @@
 package io.github.kenneycode.fusion.context
 
+import android.opengl.EGLContext
+
 /**
  *
  * Coded by kenney
@@ -20,6 +22,8 @@ interface GLContext {
      *
      */
     fun runOnGLContext(task: () -> Unit)
+
+    fun getEGLContext(): EGLContext
 
     fun release()
 

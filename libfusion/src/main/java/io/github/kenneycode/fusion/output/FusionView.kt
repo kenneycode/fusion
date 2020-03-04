@@ -2,6 +2,8 @@ package io.github.kenneycode.fusion.output
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.opengl.EGL14
+import android.opengl.EGLContext
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
@@ -107,9 +109,13 @@ class FusionView : TextureView, InputReceiver, GLContext {
         }
     }
 
+    override fun getEGLContext(): EGLContext {
+        return glThread?.getEGLContext() ?: EGL14.EGL_NO_CONTEXT
+    }
+
     /**
      *
-     * detached input window回调，此时销毁资源
+     * detached from window回调，此时销毁资源
      *
      */
     public override fun onDetachedFromWindow() {

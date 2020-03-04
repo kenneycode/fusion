@@ -6,6 +6,7 @@ import io.github.kenneycode.fusion.input.InputReceiver
 import io.github.kenneycode.fusion.renderer.Renderer
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.texture.TexturePool
+import java.util.concurrent.Semaphore
 
 /**
  *
@@ -50,8 +51,9 @@ class RenderPipeline private constructor() : InputReceiver {
         return this
     }
 
-    fun init() {
-        input.onInit()
+    fun init(data: MutableMap<String, Any> = mutableMapOf()) {
+        input.onInit(glContext!!, data)
+        output.onInit(glContext!!, data)
         renderer.init()
     }
 
@@ -71,10 +73,10 @@ class RenderPipeline private constructor() : InputReceiver {
         outputTexture.decreaseRef()
     }
 
-    fun start() {
+    fun start(data: MutableMap<String, Any> = mutableMapOf()) {
         executeOnGLContext {
             init()
-            input.start()
+            input.start(data)
         }
     }
 
@@ -92,9 +94,23 @@ class RenderPipeline private constructor() : InputReceiver {
         }
     }
 
+    /**
+     *
+     * 等待RenderPipeline执行完成
+     *
+     */
+    fun flush() {
+        val lock = Semaphore(0)
+        executeOnGLContext {
+            lock.release()
+        }
+        lock.acquire()
+    }
+
     fun release() {
         executeOnGLContext {
             input.onRelease()
+            output.onRelease()
             renderer.release()
             glContext?.release()
         }
@@ -102,9 +118,9 @@ class RenderPipeline private constructor() : InputReceiver {
 
     interface Input {
 
-        fun start()
+        fun start(data: MutableMap<String, Any>)
         fun setInputReceiver(inputReceiver: InputReceiver)
-        fun onInit()
+        fun onInit(glContext: GLContext, data: MutableMap<String, Any>)
         fun onUpdate(data: MutableMap<String, Any>)
         fun onRelease()
 

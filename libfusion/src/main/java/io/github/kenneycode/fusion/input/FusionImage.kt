@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.input
 
 import android.graphics.Bitmap
+import io.github.kenneycode.fusion.context.GLContext
 
 import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.texture.Texture
@@ -30,7 +31,7 @@ class FusionImage(private val image: Bitmap) : RenderPipeline.Input, InputReceiv
         this.inputReceiver = inputReceiver
     }
 
-    override fun onInit() {
+    override fun onInit(glContext: GLContext, data: MutableMap<String, Any>) {
         val buffer = ByteBuffer.allocate(image.width * image.height * 4)
         image.copyPixelsToBuffer(buffer)
         buffer.position(0)
@@ -43,7 +44,7 @@ class FusionImage(private val image: Bitmap) : RenderPipeline.Input, InputReceiv
     override fun onUpdate(data: MutableMap<String, Any>) {
     }
 
-    override fun start() {
+    override fun start(data: MutableMap<String, Any>) {
         inputReceiver.onInputReady(imageTexture)
     }
 
