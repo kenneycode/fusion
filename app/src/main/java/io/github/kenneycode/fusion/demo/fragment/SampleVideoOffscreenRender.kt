@@ -66,7 +66,7 @@ class SampleVideoOffscreenRender : Fragment() {
             }
 
             override fun onEnd() {
-                renderPipeline.flush()
+                renderPipeline.release()
                 activity?.runOnUiThread { tips.text = "视频已生成! path = $outputVideoPath" }
             }
 
