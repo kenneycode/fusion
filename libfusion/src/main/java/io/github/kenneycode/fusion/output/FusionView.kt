@@ -123,7 +123,7 @@ class FusionView : TextureView, InputReceiver, GLContext {
         glThread?.let {
             it.post({
                 displayRenderer.release()
-                glThread!!.release()
+                it.release()
             })
         }
     }

@@ -381,7 +381,9 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun release() {
-        glProgram.decreaseRef()
+        if (this::glProgram.isInitialized) {
+            glProgram.decreaseRef()
+        }
     }
 
 }
