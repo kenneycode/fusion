@@ -16,20 +16,12 @@ import java.util.*
  *
  */
 
-class RenderGraph private constructor() : Renderer {
+class RenderGraph : Renderer {
 
     private var input = mutableListOf<Texture>()
     private var output: Texture? = null
     private val rendererNodeMap = HashMap<String, Node>()
     private val startNodes = mutableListOf<Node>()
-
-    companion object {
-
-        fun create(): RenderGraph {
-            return RenderGraph()
-        }
-
-    }
 
     /**
      *

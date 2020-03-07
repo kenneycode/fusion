@@ -81,7 +81,7 @@ class SampleMVPMatrix : Fragment() {
                     val displayRenderer = DisplayRenderer()
 
                     // 创建RenderChain
-                    renderChain = RenderChain.create()
+                    renderChain = RenderChain()
                             .addRenderer(simpleRenderer)
                             .addRenderer(displayRenderer).apply {
                                 init()

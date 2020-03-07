@@ -1,6 +1,5 @@
 package io.github.kenneycode.fusion.process
 
-import io.github.kenneycode.fusion.context.GLContext
 import io.github.kenneycode.fusion.renderer.Renderer
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.util.Util
@@ -15,18 +14,10 @@ import io.github.kenneycode.fusion.util.Util
  *
  */
 
-open class RenderChain protected constructor(): Renderer {
+open class RenderChain : Renderer {
 
-    private val renderGraph = RenderGraph.create()
+    private val renderGraph = RenderGraph()
     private var tailRendererId: String? = null
-
-    companion object {
-
-        fun create(): RenderChain {
-            return RenderChain()
-        }
-
-    }
 
     /**
      *

@@ -39,7 +39,7 @@ class SampleVideo : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         // 创建RenderChain并添加一些renderer
-        val renderer = RenderChain.create()
+        val renderer = RenderChain()
                 .addRenderer(OES2RGBARenderer())
                 .addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
                 .addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })

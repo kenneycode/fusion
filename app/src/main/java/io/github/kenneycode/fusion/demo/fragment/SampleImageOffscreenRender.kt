@@ -48,7 +48,7 @@ class SampleImageOffscreenRender : Fragment() {
         val sourceImagePath = "test.png"
 
         // 创建RenderChain并添加一些renderer
-        val renderer = RenderChain.create()
+        val renderer = RenderChain()
                 .addRenderer(ScaleRenderer().apply { setFlip(false, true); setScale(0.8f) })
                 .addRenderer(CropRenderer().apply { setCropRect(0.1f, 0.9f, 0.8f, 0.2f) })
                 .addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
