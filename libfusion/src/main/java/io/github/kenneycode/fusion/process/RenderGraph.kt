@@ -84,7 +84,7 @@ class RenderGraph : Renderer {
      */
     override fun update(data: MutableMap<String, Any>): Boolean {
         layerTraversal(startNodes) { node ->
-            node.renderer.update(data)
+            node.needRender = node.renderer.update(data)
         }
         return true
     }
@@ -149,25 +149,29 @@ class RenderGraph : Renderer {
      *
      */
     private fun renderByLayer(input: List<Texture>): Texture? {
-        var intermediateOutput: Texture? = null
+        var intermediateTexture: Texture? = null
         input.forEach { it.increaseRef() }
         startNodes.forEach { it.input.addAll(input) }
         layerTraversal(startNodes) { node ->
-            node.renderer.setInput(node.input)
-            node.renderer.setOutput(
-                if (node.nextNodes.isEmpty()) {
-                    output
-                } else {
-                    TexturePool.obtainTexture(node.input.first().width, node.input.first().height)
-                }
-            )
-            node.renderer.render()
-            intermediateOutput = node.renderer.getOutput()
+            intermediateTexture = if (node.needRender) {
+                node.renderer.setInput(node.input)
+                node.renderer.setOutput(
+                        if (node.nextNodes.isEmpty()) {
+                            output
+                        } else {
+                            TexturePool.obtainTexture(node.input.first().width, node.input.first().height)
+                        }
+                )
+                node.renderer.render()
+                node.renderer.getOutput()
+            } else {
+                node.input.first().apply { increaseRef() }
+            }
             node.input.forEach {
                 it.decreaseRef()
             }
             node.input.clear()
-            intermediateOutput?.let { outputTexture ->
+            intermediateTexture?.let { outputTexture ->
                 if (node.nextNodes.isNotEmpty()) {
                     outputTexture.increaseRef(node.nextNodes.size - 1)
                     node.nextNodes.forEach { nextNode ->
@@ -176,7 +180,7 @@ class RenderGraph : Renderer {
                 }
             }
         }
-        return intermediateOutput
+        return intermediateTexture
     }
 
     /**
