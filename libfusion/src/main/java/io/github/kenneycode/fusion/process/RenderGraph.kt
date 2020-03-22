@@ -33,7 +33,7 @@ class RenderGraph : Renderer {
      *
      */
     fun addRenderer(renderer: Renderer, id: String = Util.genId(renderer)): RenderGraph {
-        rendererNodeMap[id] = Node(renderer).also {
+        rendererNodeMap[id] = Node(renderer, id).also {
             startNodes.add(it)
         }
         return this
@@ -222,6 +222,37 @@ class RenderGraph : Renderer {
 
     /**
      *
+     * 从 graph 中删除一个 renderer
+     * 如果被删除的 node 没有前置节点，直接删除
+     * 如果被删除的 node 只有一个前置节点，则直接将前置节点与后置节点连接
+     * 否则删除该 node 的同时其所有连接关系
+     *
+     * @param id renderer id
+     *
+     */
+    fun removeRenderer(id: String) {
+        if (!startNodes.removeAll { it.id == id }) {
+            val preNodes = mutableListOf<Node>()
+            val nextNodes = rendererNodeMap[id]!!.nextNodes
+            layerTraversal(startNodes) { node ->
+                if (node.nextNodes.any { it.id == id }) {
+                    preNodes.add(node)
+                }
+            }
+            if (preNodes.size == 1) {
+                preNodes.first().nextNodes.clear()
+                preNodes.first().nextNodes.addAll(nextNodes)
+            } else {
+                preNodes.forEach { preNode ->
+                    preNode.nextNodes.removeAll { it.id == id }
+                }
+            }
+        }
+        rendererNodeMap.remove(id)
+    }
+
+    /**
+     *
      * 释放资源
      *
      */
@@ -236,7 +267,7 @@ class RenderGraph : Renderer {
      * Graph Node
      *
      */
-    private open inner class Node(val renderer: Renderer, var layer: Int = 0) {
+    private open inner class Node(val renderer: Renderer, val id: String, var layer: Int = 0) {
 
         var needRender = true
         var input = mutableListOf<Texture>()

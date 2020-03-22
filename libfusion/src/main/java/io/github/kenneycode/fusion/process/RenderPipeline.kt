@@ -94,6 +94,16 @@ class RenderPipeline private constructor() : InputReceiver {
         }
     }
 
+
+    /**
+     *
+     * 触发一次更新和渲染
+     *
+     */
+    fun refresh() {
+
+    }
+
     /**
      *
      * 等待RenderPipeline执行完成

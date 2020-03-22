@@ -61,6 +61,17 @@ open class RenderChain : Renderer {
 
     /**
      *
+     * 删除一个 renderer
+     *
+     * @param id renderer id
+     *
+     */
+    fun removeRenderer(id: String) {
+        renderGraph.removeRenderer(id)
+    }
+
+    /**
+     *
      * 设置输入
      *
      * @param frameBuffer 输入FrameBuffer
