@@ -253,6 +253,18 @@ class RenderGraph : Renderer {
 
     /**
      *
+     * 重置 graph node 的连接关系
+     *
+     */
+    fun reset() {
+        layerTraversal(startNodes) { node ->
+            node.nextNodes.clear()
+        }
+        startNodes.clear()
+    }
+
+    /**
+     *
      * 释放资源
      *
      */
