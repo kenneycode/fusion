@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.github.kenneycode.fusion.demo.R
-import io.github.kenneycode.fusion.demo.Util
+import io.github.kenneycode.fusion.util.BitmapUtil
 import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 
-import io.github.kenneycode.fusion.input.FusionImage
 import io.github.kenneycode.fusion.input.FusionVideo
 import io.github.kenneycode.fusion.process.RenderChain
 import io.github.kenneycode.fusion.process.RenderPipeline
@@ -41,7 +40,7 @@ class SampleVideo : Fragment() {
         // 创建RenderChain并添加一些renderer
         val renderer = RenderChain()
                 .addRenderer(OES2RGBARenderer())
-                .addRenderer(LUTRenderer().apply { setLUTImage(Util.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+                .addRenderer(LUTRenderer().apply { setLUTImage(BitmapUtil.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
                 .addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })
 
         // 创建RenderPipeline，连接输入、渲染器与输出

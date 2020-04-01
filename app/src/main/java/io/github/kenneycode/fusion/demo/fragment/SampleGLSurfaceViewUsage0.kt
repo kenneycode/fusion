@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.github.kenneycode.fusion.common.DataKeys
 import io.github.kenneycode.fusion.demo.R
-import io.github.kenneycode.fusion.demo.Util
+import io.github.kenneycode.fusion.util.BitmapUtil
 import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 import io.github.kenneycode.fusion.process.RenderGraph
 import io.github.kenneycode.fusion.program.GLProgramPool
@@ -84,7 +84,7 @@ class SampleGLSurfaceViewUsage0 : Fragment() {
                             }
 
                     // 创建图片输入源
-                    val bitmap = Util.decodeBitmapFromAssets("test.png")!!
+                    val bitmap = BitmapUtil.decodeBitmapFromAssets("test.png")!!
                     val buffer = ByteBuffer.allocate(bitmap.width * bitmap.height * 4)
                     bitmap.copyPixelsToBuffer(buffer)
                     buffer.position(0)

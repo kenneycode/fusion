@@ -6,6 +6,7 @@ import io.github.kenneycode.fusion.context.GLContext
 import io.github.kenneycode.fusion.process.RenderPipeline
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.texture.TexturePool
+import io.github.kenneycode.fusion.util.BitmapUtil
 import java.nio.ByteBuffer
 
 /**
@@ -33,7 +34,7 @@ class FusionImage(private val image: Bitmap) : RenderPipeline.Input, InputReceiv
 
     override fun onInit(glContext: GLContext, data: MutableMap<String, Any>) {
         val buffer = ByteBuffer.allocate(image.width * image.height * 4)
-        image.copyPixelsToBuffer(buffer)
+        BitmapUtil.flipBitmap(image, false, true).copyPixelsToBuffer(buffer)
         buffer.position(0)
         imageTexture = TexturePool.obtainTexture(image.width, image.height).apply {
             retain = true

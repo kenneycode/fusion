@@ -34,6 +34,8 @@ abstract class Parameter(val key : String) {
      */
     protected abstract fun onBind(location: Int)
 
+    protected open fun getValue(): Any { return 0 }
+
     /**
      *
      * 更新参数

@@ -1,5 +1,7 @@
 package io.github.kenneycode.fusion.renderer
 
+import android.graphics.Bitmap
+
 /**
  *
  * Coded by kenney
@@ -47,6 +49,16 @@ interface GLRenderer : Renderer {
      *
      */
     fun setTextureCoordinates(textureCoordinates: FloatArray)
+
+    /**
+     *
+     * 设置 bitmap 纹理参数
+     *
+     * @param key 纹理参数名
+     * @param value bitmap
+     *
+     */
+    fun setUniformBitmapTexture2D(key: String, value: Bitmap, index: Int = 0)
 
     /**
      *

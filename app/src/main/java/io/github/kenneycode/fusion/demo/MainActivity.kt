@@ -11,6 +11,7 @@ import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.kenneycode.fusion.demo.SimpleActivity.Companion.KEY_SAMPLE_INDEX
+import io.github.kenneycode.fusion.util.BitmapUtil
 
 
 /**
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Util.context = applicationContext
+        BitmapUtil.context = applicationContext
 
         val samplesList = findViewById<RecyclerView>(R.id.list)
         val layoutManager = LinearLayoutManager(this)

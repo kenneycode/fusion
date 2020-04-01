@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.renderer
 
 
+import android.graphics.Bitmap
 import android.opengl.GLES20.*
 import android.util.Log
 import io.github.kenneycode.fusion.common.Constants
@@ -102,6 +103,20 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
     override fun setUniformTexture2D(key: String, value: Int, index: Int) {
         setParameter(key, value) {
             Texture2DParameter(key, value, index)
+        }
+    }
+
+    /**
+     *
+     * 设置 bitmap 纹理参数
+     *
+     * @param key 纹理参数名
+     * @param value bitmap
+     *
+     */
+    override fun setUniformBitmapTexture2D(key: String, value: Bitmap, index: Int) {
+        setParameter(key, value) {
+            BitmapTexture2DParameter(key, value, index)
         }
     }
 
@@ -252,6 +267,16 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
 
     /**
      *
+     * 绑定渲染状态
+     *
+     */
+    protected fun bindRenderState() {
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    }
+
+    /**
+     *
      * 绑定参数
      *
      */
@@ -283,11 +308,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     private fun performRendering() {
-        glClearColor(0f, 1f, 0f, 1f)
-        glClear(GL_COLOR_BUFFER_BIT)
-        glEnable(GL_BLEND)
         glDrawArrays(GL_TRIANGLES, 0, vertexCount)
-        glDisable(GL_BLEND)
     }
 
     /**
@@ -358,6 +379,24 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
         output = texture
     }
 
+    /**
+     *
+     * 渲染前回调
+     *
+     */
+    protected open fun beforeRender() {
+        glClearColor(0f, 1f, 0f, 1f)
+        glClear(GL_COLOR_BUFFER_BIT)
+    }
+
+    /**
+     *
+     * 渲染后回调
+     *
+     */
+    protected fun afterRender() {
+        unBindInput()
+    }
 
     /**
      *
@@ -368,10 +407,11 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
     override fun render() {
         bindInput()
         bindOutput()
-        GLUtil.checkGLError()
         bindParameters()
+        bindRenderState()
+        beforeRender()
         performRendering()
-        unBindInput()
+        afterRender()
         GLUtil.checkGLError()
     }
 
