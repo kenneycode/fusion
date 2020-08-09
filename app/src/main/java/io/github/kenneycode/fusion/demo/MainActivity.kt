@@ -1,5 +1,6 @@
 package io.github.kenneycode.fusion.demo
 
+import android.Manifest
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 
@@ -12,6 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.kenneycode.fusion.demo.SimpleActivity.Companion.KEY_SAMPLE_INDEX
 import io.github.kenneycode.fusion.util.BitmapUtil
+import androidx.core.app.ActivityCompat
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import io.github.kenneycode.fusion.util.Utils
+
+
 
 
 /**
@@ -30,13 +37,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         BitmapUtil.context = applicationContext
-
+        Utils.copyAssetsFiles(this, "test.mp4", "/sdcard/test.mp4")
+        checkPermissions()
         val samplesList = findViewById<RecyclerView>(R.id.list)
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         samplesList.layoutManager = layoutManager
         samplesList.adapter = MyAdapter()
 
+    }
+
+
+    private fun checkPermissions() {
+        val permissions = mutableListOf<String>()
+        if (ContextCompat.checkSelfPermission(application, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+        if (ContextCompat.checkSelfPermission(application, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.CAMERA)
+        }
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), 1)
+        }
     }
 
     inner class MyAdapter : RecyclerView.Adapter<VH>() {

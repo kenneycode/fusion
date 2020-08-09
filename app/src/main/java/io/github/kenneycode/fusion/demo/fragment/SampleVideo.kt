@@ -41,7 +41,7 @@ class SampleVideo : Fragment() {
         val renderer = RenderChain()
                 .addRenderer(OESConvertRenderer())
                 .addRenderer(LUTRenderer().apply { setLUTImage(BitmapUtil.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
-                .addRenderer(GaussianBlurRenderer().apply { setBlurRadius(10) })
+                .addRenderer(GaussianBlurRenderer().apply { setBlurRadius(20) })
 
         // 创建RenderPipeline，连接输入、渲染器与输出
         renderPipeline = RenderPipeline
