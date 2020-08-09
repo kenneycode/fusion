@@ -19,10 +19,8 @@ import io.github.kenneycode.fusion.util.Util
 class BitmapTexture2DParameter(key: String, private var value: Bitmap, index: Int) : Texture2DParameter(key, 0, index) {
 
     override fun onBind(location: Int) {
-        Util.assert(!value.isRecycled)
-        if (!glIsTexture(getValue() as Int)) {
-            super.update(GLUtil.bitmap2Texture(value, true))
-        }
+        Util.assert(!value.isRecycled, "bitmap is recycled")
+        super.update(GLUtil.bitmap2Texture(value, true))
         super.onBind(location)
     }
 

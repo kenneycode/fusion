@@ -39,7 +39,7 @@ class FusionVideo(private val videoPath: String) : RenderPipeline.Input {
                 it.updateTexImage()
                 it.getTransformMatrix(transformMatrix)
                 inputReceiver.onInputReady(
-                    Texture(videoSize.width, videoSize.height, decodeOutputTexture, GLES11Ext.GL_TEXTURE_EXTERNAL_OES).apply { retain = true },
+                    Texture(videoSize.width, videoSize.height, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, decodeOutputTexture).apply { retain = true },
                     mutableMapOf<String, Any>().apply { put(DataKeys.ST_MATRIX, transformMatrix) }
                 )
             }

@@ -4,6 +4,7 @@ import android.opengl.GLES20.*
 import android.util.Log
 import io.github.kenneycode.fusion.common.Ref
 import io.github.kenneycode.fusion.common.Shader
+import io.github.kenneycode.fusion.common.glCheck
 import io.github.kenneycode.fusion.parameter.Parameter
 
 import io.github.kenneycode.fusion.util.Util
@@ -33,38 +34,46 @@ class GLProgram(val shader: Shader) : Ref() {
 
             program = glCreateProgram()
 
-            val vertexShader = glCreateShader(GL_VERTEX_SHADER)
-            val fragmentShader = glCreateShader(GL_FRAGMENT_SHADER)
+            var vertexShader = GL_NONE
+            glCheck { vertexShader = glCreateShader(GL_VERTEX_SHADER) }
+            var fragmentShader = GL_NONE
+            glCheck { fragmentShader = glCreateShader(GL_FRAGMENT_SHADER) }
 
-            glShaderSource(vertexShader, shader!!.vertexShader)
-            glShaderSource(fragmentShader, shader!!.fragmentShader)
+            glCheck { glShaderSource(vertexShader, shader!!.vertexShader) }
+            glCheck { glShaderSource(fragmentShader, shader!!.fragmentShader) }
 
-            glCompileShader(vertexShader)
-            glGetShaderInfoLog(vertexShader).let {
-                if (it.isNotEmpty()) {
-                    Log.e("debug", "vertex shader info log = $it")
+            glCheck { glCompileShader(vertexShader) }
+            glCheck {
+                glGetShaderInfoLog(vertexShader).let {
+                    if (it.isNotEmpty()) {
+                        Log.e("debug", "vertex shader info log = $it")
+                    }
                 }
             }
 
-            glCompileShader(fragmentShader)
-            glGetShaderInfoLog(fragmentShader).let {
-                if (it.isNotEmpty()) {
-                    Log.e("debug", "fragment shader info log = $it")
+            glCheck { glCompileShader(fragmentShader) }
+            glCheck {
+                glGetShaderInfoLog(fragmentShader).let {
+                    if (it.isNotEmpty()) {
+                        Log.e("debug", "fragment shader info log = $it")
+                    }
                 }
             }
 
-            glAttachShader(program, vertexShader)
-            glAttachShader(program, fragmentShader)
+            glCheck { glAttachShader(program, vertexShader) }
+            glCheck { glAttachShader(program, fragmentShader) }
 
-            glLinkProgram(program)
-            glGetProgramInfoLog(program).let {
-                if (it.isNotEmpty()) {
-                    Log.e("debug", "program info log = $it")
+            glCheck { glLinkProgram(program) }
+            glCheck {
+                glGetProgramInfoLog(program).let {
+                    if (it.isNotEmpty()) {
+                        Log.e("debug", "program info log = $it")
+                    }
                 }
             }
 
-            glDeleteShader(vertexShader)
-            glDeleteShader(fragmentShader)
+            glCheck { glDeleteShader(vertexShader) }
+            glCheck { glDeleteShader(fragmentShader) }
 
         }
 

@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.parameter
 
 import android.opengl.GLES20.glUniform1i
+import io.github.kenneycode.fusion.common.glCheck
 
 /**
  *
@@ -15,7 +16,7 @@ import android.opengl.GLES20.glUniform1i
 class IntParameter(key: String, private var value: Int) : UniformParameter(key) {
 
     override fun onBind(location: Int) {
-        glUniform1i(location, value)
+        glCheck { glUniform1i(location, value) }
     }
 
     override fun update(value: Any) {

@@ -6,6 +6,7 @@ import io.github.kenneycode.fusion.common.Constants
 import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 
 import io.github.kenneycode.fusion.common.DataKeys
+import io.github.kenneycode.fusion.common.glCheck
 
 /**
  *
@@ -33,8 +34,8 @@ class DisplayRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fragme
     }
 
     override fun bindOutput() {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0)
-        glViewport(0, 0, displayWidth, displayHeight)
+        glCheck { glBindFramebuffer(GL_FRAMEBUFFER, 0) }
+        glCheck { glViewport(0, 0, displayWidth, displayHeight) }
     }
 
 }

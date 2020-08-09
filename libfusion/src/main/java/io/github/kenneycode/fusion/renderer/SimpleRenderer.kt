@@ -6,6 +6,7 @@ import android.opengl.GLES20.*
 import android.util.Log
 import io.github.kenneycode.fusion.common.Constants
 import io.github.kenneycode.fusion.common.Shader
+import io.github.kenneycode.fusion.common.glCheck
 import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 import io.github.kenneycode.fusion.program.GLProgram
 import io.github.kenneycode.fusion.program.GLProgramPool
@@ -259,8 +260,8 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
             FrameBufferPool.obtainFrameBuffer().apply {
                 attachTexture(outputTexture)
                 bind()
-                Util.assert(outputTexture.width > 0 && outputTexture.height > 0)
-                glViewport(0, 0, outputTexture.width, outputTexture.height)
+                Util.assert(outputTexture.width > 0 && outputTexture.height > 0, "output size error")
+                glCheck { glViewport(0, 0, outputTexture.width, outputTexture.height) }
             }
         }
     }
@@ -271,8 +272,8 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     protected fun bindRenderState() {
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glCheck { glEnable(GL_BLEND) }
+        glCheck { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) }
     }
 
     /**
@@ -308,7 +309,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     private fun performRendering() {
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount)
+        glCheck { glDrawArrays(GL_TRIANGLES, 0, vertexCount) }
     }
 
     /**
@@ -318,7 +319,7 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      */
     override fun unBindInput() {
         input.clear()
-        glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE)
+        glCheck { glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE) }
     }
 
     /**
@@ -364,7 +365,6 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     override fun getOutput(): Texture? {
-        Log.e("debug", "output texture = ${output?.texture}")
         return output
     }
 
@@ -385,8 +385,8 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
      *
      */
     protected open fun beforeRender() {
-        glClearColor(0f, 1f, 0f, 1f)
-        glClear(GL_COLOR_BUFFER_BIT)
+        glCheck { glClearColor(0f, 1f, 0f, 1f) }
+        glCheck { glClear(GL_COLOR_BUFFER_BIT) }
     }
 
     /**
@@ -412,7 +412,6 @@ open class SimpleRenderer(vertexShader: String = Constants.MVP_VERTEX_SHADER, fr
         beforeRender()
         performRendering()
         afterRender()
-        GLUtil.checkGLError()
     }
 
     /**

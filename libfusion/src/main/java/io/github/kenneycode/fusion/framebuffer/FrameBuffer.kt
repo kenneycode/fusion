@@ -3,6 +3,7 @@ package io.github.kenneycode.fusion.framebuffer
 import android.opengl.GLES11Ext
 import android.opengl.GLES20.*
 import io.github.kenneycode.fusion.common.Ref
+import io.github.kenneycode.fusion.common.glCheck
 
 import io.github.kenneycode.fusion.texture.Texture
 import io.github.kenneycode.fusion.util.GLUtil
@@ -33,13 +34,12 @@ class FrameBuffer : Ref() {
     fun attachTexture(texture: Texture) {
         attachedTexture?.decreaseRef()
         attachedTexture = texture
-        if (!glIsFramebuffer(frameBuffer)) {
+        if (frameBuffer == GL_NONE) {
             frameBuffer = GLUtil.createFrameBuffer()
         }
         bind()
-        Util.assert(texture.width > 0 && texture.height > 0 && (texture.type == GL_TEXTURE_2D || texture.type == GLES11Ext.GL_TEXTURE_EXTERNAL_OES) && glIsTexture(texture.texture) && frameBuffer > 0)
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.type, texture.texture, 0)
-        GLUtil.checkGLError()
+        Util.assert(texture.width > 0 && texture.height > 0 && (texture.type == GL_TEXTURE_2D || texture.type == GLES11Ext.GL_TEXTURE_EXTERNAL_OES) && glIsTexture(texture.texture) && frameBuffer > 0, "texture error")
+        glCheck { glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.type, texture.texture, 0) }
     }
 
     /**
@@ -48,9 +48,7 @@ class FrameBuffer : Ref() {
      *
      */
     fun bind() {
-        Util.assert(frameBuffer > GL_NONE)
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer)
-        Util.assert(glIsFramebuffer(frameBuffer))
+        glCheck { glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer) }
     }
 
     /**
@@ -59,7 +57,7 @@ class FrameBuffer : Ref() {
      *
      */
     fun unbind() {
-        glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE)
+        glCheck { glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE) }
     }
 
     /**

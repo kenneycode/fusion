@@ -4,6 +4,7 @@ import android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES
 import android.opengl.GLES20.*
 import io.github.kenneycode.fusion.util.GLUtil
 import io.github.kenneycode.fusion.common.Ref
+import io.github.kenneycode.fusion.common.glCheck
 import io.github.kenneycode.fusion.util.Util
 import java.nio.Buffer
 
@@ -17,16 +18,16 @@ import java.nio.Buffer
  *
  */
 
-class Texture(val width: Int, val height: Int, var texture: Int = 0, val type: Int = GL_TEXTURE_2D) : Ref() {
+class Texture(val width: Int, val height: Int, val type: Int = GL_TEXTURE_2D, var texture: Int = GL_NONE) : Ref() {
 
     var retain = false
 
     fun init() {
-        if (!glIsTexture(texture)) {
+        if (texture == GL_NONE) {
             texture = GLUtil.createTexture(type)
-            glBindTexture(type, texture)
-            glTexImage2D(type, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null)
-            glBindTexture(type, 0)
+            glCheck { glBindTexture(type, texture) }
+            glCheck { glTexImage2D(type, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null) }
+            glCheck { glBindTexture(type, 0) }
         }
     }
 
@@ -40,10 +41,10 @@ class Texture(val width: Int, val height: Int, var texture: Int = 0, val type: I
      *
      */
     fun setData(data: Buffer) {
-        Util.assert(width > 0 && height > 0 && (type == GL_TEXTURE_2D || type == GL_TEXTURE_EXTERNAL_OES) && glIsTexture(texture))
-        glBindTexture(type, texture)
-        glTexImage2D(type, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data)
-        glBindTexture(type, 0)
+        Util.assert(width > 0 && height > 0 && (type == GL_TEXTURE_2D || type == GL_TEXTURE_EXTERNAL_OES) && texture != GL_NONE, "texture error")
+        glCheck { glBindTexture(type, texture) }
+        glCheck { glTexImage2D(type, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data) }
+        glCheck { glBindTexture(type, 0) }
     }
 
     /**
@@ -61,7 +62,7 @@ class Texture(val width: Int, val height: Int, var texture: Int = 0, val type: I
     }
 
     fun release() {
-        if (glIsTexture(texture)) {
+        if (texture != GL_NONE) {
             GLUtil.deleteTexture(texture)
             texture = 0
         }

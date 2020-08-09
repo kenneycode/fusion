@@ -2,12 +2,11 @@ package io.github.kenneycode.fusion.util
 
 import android.graphics.Bitmap
 import android.opengl.GLES11Ext
-import android.opengl.GLES20
 import android.opengl.GLES20.*
 import java.nio.ByteBuffer
-import android.opengl.GLES30
 import android.opengl.Matrix
 import io.github.kenneycode.fusion.common.Constants
+import io.github.kenneycode.fusion.common.glCheck
 import io.github.kenneycode.fusion.texture.Texture
 
 /**
@@ -32,13 +31,13 @@ class GLUtil {
          */
         fun createTexture(type: Int = GL_TEXTURE_2D): Int {
             val textures = IntArray(1)
-            glGenTextures(1, textures, 0)
-            glBindTexture(type, textures[0])
-            glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-            glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-            glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-            glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-            glBindTexture(type, 0)
+            glCheck { glGenTextures(1, textures, 0) }
+            glCheck { glBindTexture(type, textures[0]) }
+            glCheck { glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) }
+            glCheck { glBindTexture(type, 0) }
             return textures[0]
         }
 
@@ -50,13 +49,13 @@ class GLUtil {
          */
         fun createOESTexture() : Int {
             val textures = IntArray(1)
-            GLES30.glGenTextures(textures.size, textures, 0)
-            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[0])
-            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE)
-            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE)
-            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR)
-            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
+            glCheck { glGenTextures(textures.size, textures, 0) }
+            glCheck { glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[0]) }
+            glCheck { glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR) }
+            glCheck { glBindTexture(GL_TEXTURE_2D, 0) }
             return textures[0]
         }
 
@@ -67,10 +66,7 @@ class GLUtil {
          * @param texture 纹理id
          */
         fun deleteTexture(texture: Int) {
-            if (glIsTexture(texture)) {
-                val temp = intArrayOf(texture)
-                glDeleteTextures(1, temp, 0)
-            }
+            glCheck { glDeleteTextures(1, intArrayOf(texture), 0) }
         }
 
         /**
@@ -81,7 +77,7 @@ class GLUtil {
          */
         fun createFrameBuffer(): Int {
             val frameBuffer = IntArray(1)
-            glGenFramebuffers(1, frameBuffer, 0)
+            glCheck { glGenFramebuffers(1, frameBuffer, 0) }
             return frameBuffer[0]
         }
 
@@ -93,28 +89,28 @@ class GLUtil {
          */
         fun deleteFrameBuffer(frameBuffer: Int) {
             val temp = intArrayOf(frameBuffer)
-            glDeleteFramebuffers(1, temp, 0)
+            glCheck { glDeleteFramebuffers(1, temp, 0) }
         }
 
         fun bitmap2Texture(bitmap: Bitmap): Int {
             val texture = createTexture(GL_TEXTURE_2D)
-            glBindTexture(GL_TEXTURE_2D, texture)
+            glCheck { glBindTexture(GL_TEXTURE_2D, texture) }
             val b = ByteBuffer.allocate(bitmap.width * bitmap.height * 4)
             bitmap.copyPixelsToBuffer(b)
             b.position(0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-            glTexImage2D(
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexImage2D(
                     GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width,
-                    bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b)
+                    bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b) }
             return texture
         }
 
         fun bitmap2Texture(bitmap: Bitmap, flipY: Boolean = false): Int {
             val texture = createTexture(GL_TEXTURE_2D)
-            glBindTexture(GL_TEXTURE_2D, texture)
+            glCheck { glBindTexture(GL_TEXTURE_2D, texture) }
             val b = ByteBuffer.allocate(bitmap.width * bitmap.height * 4)
             if (flipY) {
                 BitmapUtil.flipBitmap(bitmap, false, true)
@@ -122,13 +118,13 @@ class GLUtil {
                 bitmap
             }.copyPixelsToBuffer(b)
             b.position(0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-            glTexImage2D(
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexImage2D(
                     GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width,
-                    bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b)
+                    bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b) }
             return texture
         }
 
@@ -141,17 +137,17 @@ class GLUtil {
          *
          */
         fun bitmap2Texture(texture: Int, bitmap: Bitmap) {
-            glBindTexture(GL_TEXTURE_2D, texture)
+            glCheck { glBindTexture(GL_TEXTURE_2D, texture) }
             val b = ByteBuffer.allocate(bitmap.width * bitmap.height * 4)
             bitmap.copyPixelsToBuffer(b)
             b.position(0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-            glTexImage2D(
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE) }
+            glCheck { glTexImage2D(
                     GL_TEXTURE_2D, 0, GL_RGBA, bitmap.width,
-                    bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b)
+                    bitmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b) }
         }
 
         /**
@@ -177,17 +173,17 @@ class GLUtil {
         fun texture2Bitmap(texture: Int, width: Int, height: Int): Bitmap {
             val buffer = ByteBuffer.allocate(width * height * 4)
             val frameBuffers = IntArray(1)
-            glGenFramebuffers(frameBuffers.size, frameBuffers, 0)
-            glBindTexture(GL_TEXTURE_2D, texture)
-            glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[0])
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0)
-            glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+            glCheck { glGenFramebuffers(frameBuffers.size, frameBuffers, 0) }
+            glCheck { glBindTexture(GL_TEXTURE_2D, texture) }
+            glCheck { glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[0]) }
+            glCheck { glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0) }
+            glCheck { glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer) }
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             buffer.position(0)
             bitmap.copyPixelsFromBuffer(buffer)
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0)
-            glBindFramebuffer(GL_FRAMEBUFFER, 0)
-            glDeleteFramebuffers(frameBuffers.size, frameBuffers, 0)
+            glCheck { glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0) }
+            glCheck { glBindFramebuffer(GL_FRAMEBUFFER, 0) }
+            glCheck { glDeleteFramebuffers(frameBuffers.size, frameBuffers, 0) }
             return bitmap
         }
 
@@ -203,17 +199,17 @@ class GLUtil {
         fun oesTexture2Bitmap(texture: Int, width: Int, height: Int): Bitmap {
             val buffer = ByteBuffer.allocate(width * height * 4)
             val frameBuffers = IntArray(1)
-            glGenFramebuffers(frameBuffers.size, frameBuffers, 0)
-            glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture)
-            glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[0])
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture, 0)
-            glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+            glCheck { glGenFramebuffers(frameBuffers.size, frameBuffers, 0) }
+            glCheck { glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture) }
+            glCheck { glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[0]) }
+            glCheck { glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture, 0) }
+            glCheck { glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer) }
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             buffer.position(0)
             bitmap.copyPixelsFromBuffer(buffer)
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0, 0)
-            glBindFramebuffer(GL_FRAMEBUFFER, 0)
-            glDeleteFramebuffers(frameBuffers.size, frameBuffers, 0)
+            glCheck { glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0, 0) }
+            glCheck { glBindFramebuffer(GL_FRAMEBUFFER, 0) }
+            glCheck { glDeleteFramebuffers(frameBuffers.size, frameBuffers, 0) }
             return bitmap
         }
 
@@ -301,15 +297,15 @@ class GLUtil {
         }
 
         fun hasAttribute(program: Int, attributeName: String): Boolean {
-            return glGetAttribLocation(program, attributeName) >= 0
+            var ret = false
+            glCheck { ret = glGetAttribLocation(program, attributeName) >= 0 }
+            return ret
         }
 
         fun hasUniform(program: Int, attributeName: String): Boolean {
-            return glGetUniformLocation(program, attributeName) >= 0
-        }
-
-        fun checkGLError() {
-            Util.assert(glGetError() == 0)
+            var ret = false
+            glCheck { ret = glGetUniformLocation(program, attributeName) >= 0 }
+            return ret
         }
 
     }

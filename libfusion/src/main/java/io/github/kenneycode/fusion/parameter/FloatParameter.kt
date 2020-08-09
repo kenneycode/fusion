@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.parameter
 
 import android.opengl.GLES20.*
+import io.github.kenneycode.fusion.common.glCheck
 
 /**
  *
@@ -15,7 +16,7 @@ import android.opengl.GLES20.*
 class FloatParameter(key: String, private var value: Float) : UniformParameter(key) {
 
     override fun onBind(location: Int) {
-        glUniform1f(location, value)
+        glCheck { glUniform1f(location, value) }
     }
 
     override fun update(value: Any) {

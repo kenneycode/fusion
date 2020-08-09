@@ -29,7 +29,7 @@ object TexturePool {
      *
      */
     fun obtainTexture(width: Int, height: Int, type: Int = GL_TEXTURE_2D): Texture {
-        Util.assert(width > 0 && height > 0)
+        Util.assert(width > 0 && height > 0, "texture size error")
         if (!cache.containsKey(type)) {
             cache[type] = mutableMapOf()
         }

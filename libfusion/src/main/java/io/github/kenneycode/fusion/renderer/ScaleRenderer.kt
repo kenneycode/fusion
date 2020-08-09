@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.renderer
 
 import android.opengl.GLES20
+import io.github.kenneycode.fusion.common.glCheck
 import io.github.kenneycode.fusion.framebuffer.FrameBufferPool
 import io.github.kenneycode.fusion.texture.TexturePool
 
@@ -34,7 +35,7 @@ class ScaleRenderer : SimpleRenderer() {
                 frameBuffer.attachTexture(output)
             }
             frameBuffer.bind()
-            GLES20.glViewport(0, 0, output.width, output.height)
+            glCheck { GLES20.glViewport(0, 0, output.width, output.height) }
         }
     }
 

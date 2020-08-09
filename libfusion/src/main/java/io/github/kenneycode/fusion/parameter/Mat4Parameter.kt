@@ -1,7 +1,7 @@
 package io.github.kenneycode.fusion.parameter
 
-import android.opengl.GLES30
-import android.util.Log
+import android.opengl.GLES20.glUniformMatrix4fv
+import io.github.kenneycode.fusion.common.glCheck
 
 /**
  *
@@ -16,7 +16,7 @@ import android.util.Log
 class Mat4Parameter(key : String, private var value : FloatArray) : UniformParameter(key) {
 
     override fun onBind(location: Int) {
-        GLES30.glUniformMatrix4fv(location, 1, false, value, 0)
+        glCheck { glUniformMatrix4fv(location, 1, false, value, 0) }
     }
 
     override fun update(value: Any) {

@@ -1,5 +1,6 @@
 package io.github.kenneycode.fusion.util
 
+import java.lang.AssertionError
 import java.lang.RuntimeException
 
 /**
@@ -16,9 +17,9 @@ class Util {
 
     companion object {
 
-        fun assert(v: Boolean) {
+        fun assert(v: Boolean, msg: String = "") {
             if (!v) {
-                throw RuntimeException("assertion failed")
+                throw AssertionError(msg)
             }
         }
 

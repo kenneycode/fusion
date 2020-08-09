@@ -1,6 +1,7 @@
 package io.github.kenneycode.fusion.parameter
 
 import android.opengl.GLES20
+import io.github.kenneycode.fusion.common.glCheck
 import io.github.kenneycode.fusion.util.Util
 
 /**
@@ -24,9 +25,9 @@ abstract class UniformParameter(key : String) : Parameter(key) {
      */
     override fun bind(program: Int) {
         if (location < 0) {
-            location = GLES20.glGetUniformLocation(program, key)
+            glCheck { location = GLES20.glGetUniformLocation(program, key) }
         }
-        Util.assert(location >= 0)
+        Util.assert(location >= 0, "glGetUniformLocation error")
         onBind(location)
     }
 

@@ -7,6 +7,7 @@ import java.nio.ByteOrder
 import android.opengl.GLES20.GL_FLOAT
 import android.opengl.GLES20.glEnableVertexAttribArray
 import android.opengl.GLES20.glVertexAttribPointer
+import io.github.kenneycode.fusion.common.glCheck
 import io.github.kenneycode.fusion.util.Util
 
 /**
@@ -30,9 +31,9 @@ class AttributeParameter(key: String, private var value: FloatArray, private val
      */
     override fun bind(program: Int) {
         if (location < 0) {
-            location = GLES20.glGetAttribLocation(program, key)
+            glCheck { location = GLES20.glGetAttribLocation(program, key) }
         }
-        Util.assert(location >= 0)
+        Util.assert(location >= 0, "glGetAttribLocation wrong location")
         onBind(location)
     }
 
@@ -44,8 +45,8 @@ class AttributeParameter(key: String, private var value: FloatArray, private val
                     put(value)
                     position(0)
                 }
-        glVertexAttribPointer(location, componentCount, GL_FLOAT, false, 0, vertexBuffer)
-        glEnableVertexAttribArray(location)
+        glCheck { glVertexAttribPointer(location, componentCount, GL_FLOAT, false, 0, vertexBuffer) }
+        glCheck { glEnableVertexAttribArray(location) }
     }
 
     override fun update(value: Any) {

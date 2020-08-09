@@ -79,7 +79,6 @@ class FusionView : TextureView, InputReceiver, GLContext {
         displayRenderer.setInput(input)
         displayRenderer.render()
         glThread?.swapBuffers()
-        GLUtil.checkGLError()
     }
 
     /**

@@ -1,7 +1,9 @@
 package io.github.kenneycode.fusion.parameter
 
 import android.opengl.GLES11Ext
+import android.opengl.GLES20.*
 import android.opengl.GLES30
+import io.github.kenneycode.fusion.common.glCheck
 
 /**
  *
@@ -16,9 +18,9 @@ import android.opengl.GLES30
 class OESTextureParameter(key : String, private var value : Int) : UniformParameter(key) {
 
     override fun onBind(location: Int) {
-        GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
-        GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, value)
-        GLES30.glUniform1i(location, 0)
+        glCheck { glActiveTexture(GLES30.GL_TEXTURE0) }
+        glCheck { glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, value) }
+        glCheck { glUniform1i(location, 0) }
     }
 
     override fun update(value: Any) {

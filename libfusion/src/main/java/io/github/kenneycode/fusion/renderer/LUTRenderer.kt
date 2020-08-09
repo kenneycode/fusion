@@ -2,6 +2,7 @@ package io.github.kenneycode.fusion.renderer
 
 import android.graphics.Bitmap
 import io.github.kenneycode.fusion.common.Constants
+import io.github.kenneycode.fusion.common.glCheck
 import io.github.kenneycode.fusion.util.GLUtil
 
 /**
@@ -33,8 +34,8 @@ class LUTRenderer : SimpleRenderer(Constants.SIMPLE_VERTEX_SHADER, Constants.LUT
 
     override fun init() {
         super.init()
-        setUniformFloat(ParameterKey.STRENGTH, 1f)
-        setUniformTexture2D(ParameterKey.LUT_TEXTURE, GLUtil.bitmap2Texture(lutBitmap), 1)
+        glCheck { setUniformFloat(ParameterKey.STRENGTH, 1f) }
+        glCheck { setUniformTexture2D(ParameterKey.LUT_TEXTURE, GLUtil.bitmap2Texture(lutBitmap), 1) }
     }
 
     fun setLUTImage(lutBitmap: Bitmap) {
@@ -42,7 +43,7 @@ class LUTRenderer : SimpleRenderer(Constants.SIMPLE_VERTEX_SHADER, Constants.LUT
     }
 
     fun setLUTStrength(strength: Float) {
-        setUniformFloat(ParameterKey.STRENGTH, strength)
+        glCheck { setUniformFloat(ParameterKey.STRENGTH, strength) }
     }
 
 }
