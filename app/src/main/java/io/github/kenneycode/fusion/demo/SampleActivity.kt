@@ -27,7 +27,8 @@ class SimpleActivity : AppCompatActivity() {
             Pair(R.string.sample_2, SampleMVPMatrix::class.java),
             Pair(R.string.sample_3, SampleVideo::class.java),
             Pair(R.string.sample_4, SampleImageOffscreenRender::class.java),
-            Pair(R.string.sample_5, SampleVideoOffscreenRender::class.java)
+            Pair(R.string.sample_5, SampleVideoOffscreenRender::class.java),
+            Pair(R.string.sample_6, SampleCamera::class.java)
         )
 
     }

@@ -6,4 +6,5 @@
     <string name="sample_3">视频渲染</string>
     <string name="sample_4">图片离屏渲染</string>
     <string name="sample_5">视频离屏渲染</string>
+    <string name="sample_6">相机渲染</string>
 </resources>
