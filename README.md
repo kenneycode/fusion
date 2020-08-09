@@ -1,12 +1,12 @@
 [english README please click here](./README-en.md)
 
-## fusion是什么？
+### fusion是什么？
 
 `Android`上的`OpenGL ES`特效渲染库，类似`IOS`上的 `GPUImage`.
 
 - 高度抽象了输入输出及渲染过程，隐藏了复杂繁琐的`OpenGL API`，即使不会`OpenGL`也能轻松上手。
 - 统一渲染过程，通过`RenderChain`/`RenderGraph`将渲染器按`chain`/`graph`进行组织管理，并通过`RenderPipline`统一输入输出。
-- 支持图片/视频输入，自带视频编解码。
+- 支持图片/视频/相机输入，自带视频编解码和相机逻辑。
 - 支持图片/视频离屏渲染用于保存。
 - 支持`texture/frame buffer/program`自动回收复用。
 - 封装了`GL`线程及`EGL`环境，可通过`GLThread`及`EGL`帮助快速创建`GL`环境。
@@ -15,7 +15,7 @@
 
 持续更新中...
 
-## 引入方法
+### 引入方法
 
 根`gradle`中添加：
 
@@ -23,7 +23,7 @@
 allprojects {
     repositories {
     	...
-    	maven { url 'https://jitpack.io' }
+    	maven { url 'https://www.jitpack.io' }
     }
 }
 ```
@@ -32,11 +32,11 @@ allprojects {
 
 ```
 dependencies {
-	implementation 'com.github.kenneycode:fusion:1.1.0'
+	implementation 'com.github.kenneycode:fusion:1.2.0'
 }
 ```
 
-## 图片渲染基本用法
+### 图片渲染基本用法
 
 ```kotlin
 // 创建RenderChain并添加一些renderer
@@ -57,7 +57,7 @@ renderPipeline = RenderPipeline
 renderPipeline.start()
 ```
 
-## 视频渲染基本用法
+### 视频渲染基本用法
 
 ```kotlin
 // 创建RenderChain并添加一些renderer
@@ -69,6 +69,30 @@ val renderer = RenderChain()
 // 创建RenderPipeline，连接输入、渲染器与输出
 renderPipeline = RenderPipeline
     .input(FusionVideo("/sdcard/test.mp4"))
+    .renderWith(renderer)
+    .useContext(fusionView)
+    .output(fusionView)
+
+// 开始处理
+renderPipeline.start()
+```
+### 相机渲染基本用法
+
+```kotlin
+// 创建RenderChain并添加一些renderer
+val renderer = RenderChain()
+	.addRenderer(OESConvertRenderer())
+	.addRenderer(LUTRenderer().apply { 		setLUTImage(BitmapUtil.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+
+// 相机配置
+val fusionCameraConfig = FusionCamera.Config().apply {
+    windowRotation = activity!!.windowManager.defaultDisplay.rotation
+    desiredPreviewSize = Size(1080, 1920)
+}
+
+// 创建RenderPipeline，连接输入、渲染器与输出
+renderPipeline = RenderPipeline
+    .input(FusionCamera(fusionCameraConfig))
     .renderWith(renderer)
     .useContext(fusionView)
     .output(fusionView)
