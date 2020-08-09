@@ -80,7 +80,7 @@ renderPipeline.start()
 // create RenderChain and add some renderers
 val renderer = RenderChain()
 	.addRenderer(OESConvertRenderer())
-	.addRenderer(LUTRenderer().apply { 		setLUTImage(BitmapUtil.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+	.addRenderer(LUTRenderer().apply { setLUTImage(BitmapUtil.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
 
 // configs for constructing fusion camera
 val fusionCameraConfig = FusionCamera.Config().apply {

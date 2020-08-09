@@ -82,7 +82,7 @@ renderPipeline.start()
 // 创建RenderChain并添加一些renderer
 val renderer = RenderChain()
 	.addRenderer(OESConvertRenderer())
-	.addRenderer(LUTRenderer().apply { 		setLUTImage(BitmapUtil.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
+	.addRenderer(LUTRenderer().apply { setLUTImage(BitmapUtil.decodeBitmapFromAssets("test_lut.png")!!); setLUTStrength(0.8f) })
 
 // 相机配置
 val fusionCameraConfig = FusionCamera.Config().apply {
